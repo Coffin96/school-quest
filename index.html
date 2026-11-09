@@ -16,6 +16,47 @@
   <!-- App Container (Max-width 480px, Mobile-First) -->
   <div id="app" class="app-container">
     
+    <!-- Start Splash Screen Overlay (Shown before "Розпочати розслідування") -->
+    <div id="start-splash-screen" class="start-splash-screen" style="display: none;">
+      <div class="start-splash-card">
+        <div class="splash-badge">Шкільний детективний квест • 16 днів проти насильства</div>
+        <div class="splash-easel-icon">
+          <svg viewBox="0 0 100 100" width="84" height="84">
+            <rect width="100" height="100" rx="20" fill="#0f172a"/>
+            <!-- Easel legs -->
+            <line x1="28" y1="88" x2="48" y2="24" stroke="#d97706" stroke-width="4" stroke-linecap="round"/>
+            <line x1="72" y1="88" x2="52" y2="24" stroke="#d97706" stroke-width="4" stroke-linecap="round"/>
+            <line x1="50" y1="88" x2="50" y2="30" stroke="#92400e" stroke-width="3"/>
+            <!-- Canvas board (empty) -->
+            <rect x="24" y="30" width="52" height="38" rx="3" fill="#fffbeb" stroke="#d97706" stroke-width="2.5"/>
+            <path d="M30 45 Q50 38 70 45" stroke="#94a3b8" stroke-width="2" fill="none" stroke-dasharray="3 3"/>
+            <!-- Palette & brush at bottom -->
+            <ellipse cx="68" cy="72" rx="14" ry="10" fill="#059669"/>
+            <circle cx="63" cy="70" r="2.5" fill="#f59e0b"/>
+            <circle cx="72" cy="70" r="2.5" fill="#ef4444"/>
+            <circle cx="68" cy="75" r="2.5" fill="#3b82f6"/>
+            <!-- Magnifying glass overlay -->
+            <circle cx="42" cy="50" r="13" fill="none" stroke="#f59e0b" stroke-width="3"/>
+            <line x1="51" y1="59" x2="62" y2="70" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2 class="splash-title">Справа про порожній мольберт</h2>
+        <div class="splash-subtitle">Голос Надії</div>
+        <p class="splash-desc">
+          Головна художниця виставки залишила порожні стенди й вийшла зі спільного чату. Ваша команда має опитати свідків на перервах, розібратися у фактах і захистити кордони гідності.
+        </p>
+        <div class="splash-team-info">
+          Ваш пристрій підключено: <strong id="splash-team-badge">Слідча Команда №1</strong>
+        </div>
+        <button id="btn-start-investigation" class="btn-start-investigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <polygon points="6 4 20 12 6 20 6 4"></polygon>
+          </svg>
+          <span>Розпочати розслідування</span>
+        </button>
+      </div>
+    </div>
+    
     <!-- Top Header -->
     <header class="app-header">
       <div class="header-left">
@@ -48,7 +89,7 @@
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <span id="clues-progress-text">0/4</span>
+          <span id="clues-progress-text">0/6</span>
         </button>
 
         <!-- Dossier Toggle -->
@@ -86,12 +127,15 @@
 
       <!-- Quick Action Floating Bar -->
       <footer class="chat-action-bar" id="chat-action-bar">
-        <button id="btn-enter-code-bar" class="action-btn primary" title="Ввести 4-значний код вчителя">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        <button id="btn-scan-qr-bar" class="action-btn primary" title="Сканувати QR-код">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="6" height="6" rx="1"></rect>
+            <rect x="15" y="3" width="6" height="6" rx="1"></rect>
+            <rect x="15" y="15" width="6" height="6" rx="1"></rect>
+            <rect x="3" y="15" width="6" height="6" rx="1"></rect>
+            <path d="M10 3h4M3 10v4M21 10v4M10 21h4M10 10h4v4h-4z"></path>
           </svg>
-          <span>Ввести код вчителя</span>
+          <span>Сканувати QR</span>
         </button>
 
         <button id="btn-quick-clue" class="action-btn secondary" title="Показати поточну наводку">
@@ -142,7 +186,7 @@
           <div class="case-file-stats">
             <div class="stat-item">
               <span class="stat-label">Прогрес доказів:</span>
-              <strong class="stat-value" id="dossier-stat-progress">0 з 4</strong>
+              <strong class="stat-value" id="dossier-stat-progress">0 з 6</strong>
             </div>
             <div class="stat-item">
               <span class="stat-label">Статус справи:</span>
@@ -191,6 +235,53 @@
       </div>
     </section>
 
+    <!-- MODAL 0: IN-APP QR SCANNER -->
+    <div id="modal-qr" class="modal-backdrop" aria-hidden="true">
+      <div class="modal-sheet qr-sheet" role="dialog" aria-labelledby="modal-qr-title">
+        <div class="sheet-handle"></div>
+        <div class="modal-header">
+          <h3 id="modal-qr-title" class="modal-title">Сканування QR-коду</h3>
+          <button class="btn-close-modal" id="btn-close-qr-modal" aria-label="Закрити">&times;</button>
+        </div>
+
+        <div class="modal-body text-center qr-modal-body">
+          <p class="modal-intro">
+            Наведіть камеру на QR-код картки вчителя або перепустки команди:
+          </p>
+
+          <div class="qr-camera-container">
+            <video id="qr-video" class="qr-video" playsinline muted autoplay></video>
+            <canvas id="qr-canvas" style="display: none;"></canvas>
+
+            <!-- Приціл сканера та анімований лазерний промінь -->
+            <div class="qr-reticle">
+              <span class="qr-corner tl"></span>
+              <span class="qr-corner tr"></span>
+              <span class="qr-corner bl"></span>
+              <span class="qr-corner br"></span>
+              <div class="qr-scan-line"></div>
+            </div>
+
+            <!-- Стан камери / оверлей статусу -->
+            <div class="qr-status-overlay" id="qr-status-overlay">
+              <div class="qr-spinner" id="qr-spinner"></div>
+              <span id="qr-status-text">Ініціалізація камери...</span>
+            </div>
+          </div>
+
+          <div class="qr-actions-row">
+            <button class="btn-secondary" id="btn-switch-to-pin" type="button">
+              ⌨️ Ввести код вручну
+            </button>
+          </div>
+
+          <div class="modal-footnote">
+            Оптимізація батареї: камера вмикається лише під час сканування та негайно вимикається після закриття або зчитування коду.
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- MODAL 1: TEACHER CODE INPUT (4 DIGITS) -->
     <div id="modal-code" class="modal-backdrop" aria-hidden="true">
       <div class="modal-sheet" role="dialog" aria-labelledby="modal-code-title">
@@ -238,76 +329,59 @@
       </div>
     </div>
 
-    <!-- MODAL 2: ORGANIZER SETTINGS -->
+    <!-- MODAL 2: QUEST SETTINGS -->
     <div id="modal-settings" class="modal-backdrop" aria-hidden="true">
       <div class="modal-sheet" role="dialog" aria-labelledby="modal-settings-title">
         <div class="sheet-handle"></div>
         <div class="modal-header">
-          <h3 id="modal-settings-title" class="modal-title">Панель організатора</h3>
+          <h3 id="modal-settings-title" class="modal-title">Налаштування квесту</h3>
           <button class="btn-close-modal" id="btn-close-settings-modal" aria-label="Закрити">&times;</button>
         </div>
 
         <div class="modal-body settings-body">
-          <!-- Team Selection -->
+          <!-- Bound Team Info (No full team switching on student phone) -->
           <div class="setting-group">
-            <label class="setting-label">Номер команди учнів:</label>
-            <div class="team-buttons-row" id="settings-team-selector">
-              <button class="team-select-btn" data-team="1">1</button>
-              <button class="team-select-btn" data-team="2">2</button>
-              <button class="team-select-btn" data-team="3">3</button>
-              <button class="team-select-btn" data-team="4">4</button>
-              <button class="team-select-btn" data-team="5">5</button>
-              <button class="team-select-btn" data-team="6">6</button>
-            </div>
-            <p class="setting-hint" id="settings-route-formula">Маршрут команди: [1 ➔ 2 ➔ 3 ➔ 4 ➔ Фінал]</p>
-          </div>
-
-          <!-- Route Length -->
-          <div class="setting-group">
-            <label class="setting-label">Формат квесту (кількість перерв):</label>
-            <div class="steps-selector-row">
-              <button class="steps-select-btn active" id="btn-steps-4" data-steps="4">
-                4 перерви (Стандарт)
-              </button>
-              <button class="steps-select-btn" id="btn-steps-6" data-steps="6">
-                6 перерв (Повний день)
-              </button>
-            </div>
-          </div>
-
-          <!-- Quick Test / Direct Code Helper -->
-          <div class="setting-group">
-            <label class="setting-label">Швидкі посилання та QR-коди вчителів:</label>
-            <div class="qr-helper-table">
-              <div class="qr-helper-row">
-                <span>Каб. інформатики:</span> <code>2041</code>
-              </div>
-              <div class="qr-helper-row">
-                <span>Каб. математики:</span> <code>3182</code>
-              </div>
-              <div class="qr-helper-row">
-                <span>Каб. фізики/хімії:</span> <code>4593</code>
-              </div>
-              <div class="qr-helper-row">
-                <span>Каб. укр. мови:</span> <code>5724</code>
-              </div>
-              <div class="qr-helper-row">
-                <span>Каб. історії:</span> <code>6835</code>
-              </div>
-              <div class="qr-helper-row">
-                <span>Каб. біології:</span> <code>7946</code>
-              </div>
-              <div class="qr-helper-row highlight">
-                <span>Фінальний Штаб:</span> <code>1616</code>
+            <label class="setting-label">Прив'язка команди (на цьому телефоні):</label>
+            <div class="team-bound-card">
+              <div class="team-bound-badge" id="settings-team-bound-badge">Слідча Команда №1</div>
+              <p class="team-bound-desc" id="settings-team-bound-desc">
+                Маршрут команди: [1 ➔ 2 ➔ 3 ➔ 4 ➔ 5 ➔ 6 ➔ Фінал]
+              </p>
+              <div class="team-qr-note">
+                ℹ️ Щоб перейти до іншої команди, відскануйте відповідну Картку-перепустку команди або відкрийте посилання з параметром <code>?team=X</code>.
               </div>
             </div>
           </div>
 
-          <!-- Reset Progress -->
+          <!-- Fixed Quest Format: Full 6 Stations -->
+          <div class="setting-group">
+            <label class="setting-label">Формат квесту:</label>
+            <div class="rules-info-box" style="border-left: 2px solid var(--accent-emerald);">
+              <strong style="color: #a7f3d0;">Повний шкільний маршрут (6 станцій + Фінал)</strong>
+              <p style="margin-top: 4px; font-size: 11px; color: #94a3b8;">
+                Команда розслідує всі 6 епізодів за індивідуальною черговістю Латинського квадрата без черг перед виходом на Фінальний Штаб.
+              </p>
+            </div>
+          </div>
+
+          <!-- Rules Summary -->
+          <div class="setting-group">
+            <label class="setting-label">Пам'ятка учасника розслідування:</label>
+            <div class="rules-info-box">
+              <p>• Рухайтесь станціями за зачіпками у чаті оргкомітету.</p>
+              <p>• На кожній станції зверніться до вчителя за свідченням та 4-значним кодом.</p>
+              <p>• Під час уроку обов'язково активуйте режим паузи на урок.</p>
+            </div>
+          </div>
+
+          <!-- Reset Progress (Direct, no password needed) -->
           <div class="setting-group danger-zone">
             <button id="btn-reset-progress" class="btn-danger">
-              Скинути прогрес та розпочати заново
+              Скинути слідство на цьому телефоні
             </button>
+            <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 6px;">
+              Скидає лише локальні дані цього пристрою (без паролю).
+            </p>
           </div>
         </div>
       </div>

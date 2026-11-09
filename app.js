@@ -8,6 +8,222 @@
   'use strict';
 
   // ==========================================================================
+  // 0. ЦЕНТРАЛІЗОВАНА КАРТА АУДІОФАЙЛІВ ТА РОЗШИФРОВОК (AUDIO_FILES)
+  // ==========================================================================
+  const AUDIO_FILES = {
+    // --- ХРОНІКЕР РОЗСЛІДУВАННЯ (Євгеній Шевченко) ---
+    narrator_intro: {
+      src: 'assets/audio/narrator_intro.mp3',
+      fallbackSrc: 'narrator_intro.mp3',
+      title: 'Вступний брифінг Хронікера',
+      speaker: 'narrator',
+      speakerName: 'Хронікер розслідування',
+      speakerRole: 'Офіційний протокол',
+      transcript: '«Вітаю у шкільній комісії розслідування. Сьогодні о восьмій п\'ятнадцять ранку головна художниця виставки Надія Кравчук залишила порожні стенди і вийшла зі спільного чату. Одні називають це капризом, інші — мовчать. Ваше завдання на сьогоднішніх перервах — опитати свідків, проаналізувати факти і з\'ясувати, що насправді змусило Надію піти».'
+    },
+    narrator_station_1: {
+      src: 'assets/audio/narrator_station_1.mp3',
+      fallbackSrc: 'narrator_station_1.mp3',
+      title: 'Аудіопротокол Локації 1 (Інформатика, код 2041)',
+      speaker: 'narrator',
+      speakerName: 'Хронікер розслідування',
+      speakerRole: 'Аудіопротокол (код 2041)',
+      transcript: '«Доказ зафіксовано. Кабінет інформатики, одинадцята двадцять. За свідченням учителя, Денис сфотографував чорновий ескіз Надії та її саму з краплею фарби на щоці. Надія прямо попросила видалити знімок, але Денис перетворив фото на мем для спільного чату, назвавши це жартом. Проаналізуйте ситуацію: де проходить межа між гумором — і порушенням кордонів?»'
+    },
+    narrator_station_2: {
+      src: 'assets/audio/narrator_station_2.mp3',
+      fallbackSrc: 'narrator_station_2.mp3',
+      title: 'Аудіопротокол Локації 2 (Математика, код 3182)',
+      speaker: 'narrator',
+      speakerName: 'Хронікер розслідування',
+      speakerRole: 'Аудіопротокол (код 3182)',
+      transcript: '«Доказ зафіксовано. Кабінет математики, дванадцята п\'ятнадцять. Коли Надія спокійно сказала Максиму, що її ідеї перебивають, він усміхнувся і відповів: "Надю, тобі все здається, ти сама собі вигадала образу". Дівчина розгубилася і замовкла. Поміркуйте командою: як називається прийом, коли людину змушують сумніватися у власних почуттях?»'
+    },
+    narrator_station_3: {
+      src: 'assets/audio/narrator_station_3.mp3',
+      fallbackSrc: 'narrator_station_3.mp3',
+      title: 'Аудіопротокол Локації 3 (Фізика/Хімія, код 4593)',
+      speaker: 'narrator',
+      speakerName: 'Хронікер розслідування',
+      speakerRole: 'Аудіопротокол (код 4593)',
+      transcript: '«Доказ зафіксовано. Тринадцята десять. Під час обговорення витрат на виставку учасники оргкомітету вимагали, щоб Надія купила ватмани та фарби за гроші, подаровані їй на день народження. Умова звучала прямо: "Якщо почнеш рахувати гроші — ти нам не подруга". Зробіть висновок: це командна єдність чи примус?»'
+    },
+    narrator_station_4: {
+      src: 'assets/audio/narrator_station_4.mp3',
+      fallbackSrc: 'narrator_station_4.mp3',
+      title: 'Аудіопротокол Локації 4 (Література, код 5724)',
+      speaker: 'narrator',
+      speakerName: 'Хронікер розслідування',
+      speakerRole: 'Аудіопротокол (код 5724)',
+      transcript: '«Доказ зафіксовано. Кабінет літератури, чотирнадцята нуль п\'ять. Однокласниця Лєра зізналася подрузі, що їй дуже шкода Надю, над ескізами якої глузують у чаті. Проте вона вирішила промовчати, бо злякалася, що тоді почнуть сміятися вже з неї. Оцініть цей епізод: як мовчання свідків впливає на ситуацію булінгу?»'
+    },
+    narrator_station_5: {
+      src: 'assets/audio/narrator_station_5.mp3',
+      fallbackSrc: 'narrator_station_5.mp3',
+      title: 'Аудіопротокол Локації 5 (Історія, код 6835)',
+      speaker: 'narrator',
+      speakerName: 'Хронікер розслідування',
+      speakerRole: 'Аудіопротокол (код 6835)',
+      transcript: '«Доказ зафіксовано. Кабінет історії, чотирнадцята п\'ятдесят. На головному банері виставки біля ілюстрацій Надії Максим вказав лише своє ім\'я як керівника, заявивши, що вона просто малювала картинки за його вказівкою. Визначте: це звичайний розподіл ролей — чи знецінення чужої праці?»'
+    },
+    narrator_station_6: {
+      src: 'assets/audio/narrator_station_6.mp3',
+      fallbackSrc: 'narrator_station_6.mp3',
+      title: 'Аудіопротокол Локації 6 (Біологія/Географія, код 7946)',
+      speaker: 'narrator',
+      speakerName: 'Хронікер розслідування',
+      speakerRole: 'Аудіопротокол (код 7946)',
+      transcript: '«Доказ зафіксовано. П\'ятнадцята тридцять. Наприкінці дня троє учасників оргкомітету демонстративно відвернулися від Надії, коли вона запитала про час відкриття виставки, і домовилися не відповідати на її повідомлення до ранку. Дайте оцінку: чим насправді є такий свідомий бойкот?»'
+    },
+    narrator_lesson_pause: {
+      src: 'assets/audio/narrator_lesson_pause.mp3',
+      fallbackSrc: 'narrator_lesson_pause.mp3',
+      title: 'Озвучення режиму уроку',
+      speaker: 'narrator',
+      speakerName: 'Хронікер розслідування',
+      speakerRole: 'Пауза на урок',
+      transcript: '«Висновок занесено до матеріалів розслідування. Зараз час повертатися на урок — відкладіть смартфони. Щойно пролунає дзвінок на наступну перерву, відкрийте досьє для нової зачіпки».'
+    },
+    narrator_hq_invite: {
+      src: 'assets/audio/narrator_hq_invite.mp3',
+      fallbackSrc: 'narrator_hq_invite.mp3',
+      title: 'Запрошення у Фінальний Штаб Примирення',
+      speaker: 'narrator',
+      speakerName: 'Хронікер розслідування',
+      speakerRole: 'Штаб Примирення',
+      transcript: '«Усі докази вчорашнього дня зібрано. Тепер ви бачите повну картину того, як дрібні маніпуляції склалися в стіну тиску. Надія передала свої плакати туди, де вміють допомогти без осуду. Прямуйте до Штабу Примирення».'
+    },
+    narrator_finale: {
+      src: 'assets/audio/narrator_finale.mp3',
+      fallbackSrc: 'narrator_finale.mp3',
+      title: 'Фінальний вердикт Хронікера',
+      speaker: 'narrator',
+      speakerName: 'Хронікер розслідування',
+      speakerRole: 'Остаточний вердикт',
+      transcript: '«Справу успішно розкрито. Завдяки вашій уважності й емпатії учасники оргкомітету визнали свої помилки та ухвалили нові правила взаємоповаги. Надія Кравчук повернулася до чату і залишила для вашої команди особисте звернення».'
+    },
+
+    // --- ГОЛОВНА ГЕРОЇНЯ НАДІЯ КРАВЧУК ---
+    voice_intro: {
+      src: 'assets/audio/voice_intro.mp3',
+      fallbackSrc: 'voice_intro.mp3',
+      title: 'Вступне звернення Надії (у блокноті)',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Особистий запис у блокноті',
+      transcript: '«Привіт... Якщо ви зараз це слухаєте — значить, Софія все-таки передала вам мій робочий блокнот. Я не прошу ставати на мій бік просто так. Протягом сьогоднішніх перерв підійдіть до вчителів, які бачили нашу підготовку вчора. Послухайте їх... а потім відкрийте мої нотатки. І самі вирішіть, де межа між дружбою — і тиском».'
+    },
+    voice_station_1: {
+      src: 'assets/audio/voice_station_1.mp3',
+      fallbackSrc: 'voice_station_1.mp3',
+      title: 'Спогад Надії: Кабінет інформатики',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Голосовий щоденник (Епізод 1)',
+      transcript: '«Я тоді просто забруднила щоку фарбою, бо дуже поспішала домалювати фон... Коли Денис навів камеру, я одразу попросила: "Будь ласка, не викладай". А через хвилину в чаті вже сміялися над стікером зі мною. Невже моє "ні" взагалі нічого не важить?»'
+    },
+    voice_station_2: {
+      src: 'assets/audio/voice_station_2.mp3',
+      fallbackSrc: 'voice_station_2.mp3',
+      title: 'Спогад Надії: Кабінет математики',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Голосовий щоденник (Епізод 2)',
+      transcript: '«Після розмови з Максимом біля кабінету математики я реально пів вечора згадувала кожне слово... Він так впевнено сказав "тобі все здається, ти сама собі вигадала", що я ледь не повірила, ніби це зі мною щось не так. Це так дивно — коли твої почуття просто стирають».'
+    },
+    voice_station_3: {
+      src: 'assets/audio/voice_station_3.mp3',
+      fallbackSrc: 'voice_station_3.mp3',
+      title: 'Спогад Надії: Фізика та хімія',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Голосовий щоденник (Епізод 3)',
+      transcript: '«Ті гроші мені бабуся подарувала на день народження — я збирала на графічний планшет. І справа навіть не в сумі... А в тому, як легко мені поставили умову: або ти мовчки платиш за всіх, або ти нам не подруга. Хіба справжні друзі ставлять такі ультиматуми?»'
+    },
+    voice_station_4: {
+      src: 'assets/audio/voice_station_4.mp3',
+      fallbackSrc: 'voice_station_4.mp3',
+      title: 'Спогад Надії: Кабінет літератури',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Голосовий щоденник (Епізод 4)',
+      transcript: '«Я бачила, що Лєра все розуміє. Ми зустрілися поглядами, коли в чаті знову почали глузувати з моїх ескізів... Вона просто опустила очі в телефон. Я не тримаю на неї зла — їй було страшно. Але та тиша в коридорі боліла сильніше за самі жарти».'
+    },
+    voice_station_5: {
+      src: 'assets/audio/voice_station_5.mp3',
+      fallbackSrc: 'voice_station_5.mp3',
+      title: 'Спогад Надії: Кабінет історії',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Голосовий щоденник (Епізод 5)',
+      transcript: '«Шість вечорів поспіль я сиділа над цими плакатами до пізньої ночі. А коли побачила готовий банер у коридорі — там не було навіть мого імені. Максим сказав, що я "просто руки, які малювали за його ідеєю". Тоді руки просто опустилися».'
+    },
+    voice_station_6: {
+      src: 'assets/audio/voice_station_6.mp3',
+      fallbackSrc: 'voice_station_6.mp3',
+      title: 'Спогад Надії: Кабінет біології',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Голосовий щоденник (Епізод 6)',
+      transcript: '«Знаєте, що найгірше? Коли ти стоїш за два кроки від людей, запитуєш про завтрашній ранок — а вони переглядаються і виходять, ніби ти порожнє місце. У чаті статус "прочитано" від усіх... і жодної відповіді до самого ранку».'
+    },
+    voice_nadiia_1: {
+      src: 'assets/audio/voice_nadiia_1.mp3',
+      fallbackSrc: 'voice_nadiia_1.mp3',
+      title: 'Голосове повідомлення Надії №1',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Голосова чернетка',
+      transcript: '«Я сподівалася, що ми робимо спільну справу. Але коли всі твої ідеї знецінюють, а над почуттями сміються, залишатися там більше немає сил. Якщо вам справді цікаво, чому мольберт порожній — спитайте тих, хто був поруч учора».'
+    },
+    voice_nadiia_2: {
+      src: 'assets/audio/voice_nadiia_2.mp3',
+      fallbackSrc: 'voice_nadiia_2.mp3',
+      title: 'Голосове повідомлення Надії №2',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Голосова чернетка',
+      transcript: '«Найважче — це коли тобі роблять боляче, а потім усміхаються і кажуть: "Та ми ж жартуємо, чого ти така серйозна?". І ти стоїш і думаєш: може, зі мною справді щось не так? Але ж образа від чужого сміху — справжня».'
+    },
+    voice_nadiia_3: {
+      src: 'assets/audio/voice_nadiia_3.mp3',
+      fallbackSrc: 'voice_nadiia_3.mp3',
+      title: 'Голосове повідомлення Надії №3',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Голосова чернетка',
+      transcript: '«Коли троє тиснуть, а решта просто дивиться в підлогу і мовчить — здається, що проти тебе взагалі весь клас. Мені так хотілося, щоб хоч хтось один сказав: "Стоп, так не чесно". Навіть одне таке речення змінило б усе».'
+    },
+    voice_nadiia_4: {
+      src: 'assets/audio/voice_nadiia_4.mp3',
+      fallbackSrc: 'voice_nadiia_4.mp3',
+      title: 'Голосове повідомлення Надії №4',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Голосова чернетка',
+      transcript: '«Дякую, що вислухали мене по-справжньому. Я не хотіла зривати виставку — усі плакати цілі. Я передала їх туди, де в нашій школі завжди вміють вислухати без осуду й допомогти знайти спільну мову. Приходьте туди разом».'
+    },
+    voice_nadiia_finale: {
+      src: 'assets/audio/voice_nadiia_finale.mp3',
+      fallbackSrc: 'assets/audio/voice_finale.mp3',
+      title: 'Фінальна промова подяки Надії',
+      speaker: 'nadiia',
+      speakerName: 'Надія Кравчук',
+      speakerRole: 'Фінальне звернення',
+      transcript: '«Дякую вам! Чесно, зранку я думала, що всім буде байдуже. Але ви розібралися в кожній деталі й допомогли нам почути одне одного без образ. Мої плакати вже на стендах. Пам\'ятайте: ніхто не має права стирати ваші кордони під виглядом жартів — і навіть одне слово підтримки здатне змінити все».'
+    },
+    voice_mediator_hq: {
+      src: 'assets/audio/voice_mediator_hq.mp3',
+      fallbackSrc: 'voice_mediator_hq.mp3',
+      title: 'Повідомлення служби медіації (Каб. 16)',
+      speaker: 'mediator',
+      speakerName: 'Шкільна служба порозуміння',
+      speakerRole: 'Штаб Примирення (Каб. 16)',
+      transcript: '«Вітаємо у просторі примирення. Конфлікти трапляються, але вони не мають переростати у цькування. Ви зробили головне — відновили правду та повернули довіру. Час затвердити правила поваги для всього класу».'
+    }
+  };
+
+  // ==========================================================================
   // 1. ВЕКТОРНІ SVG-АВАТАРИ ПЕРСОНАЖІВ ТА ГРАФІКА (100% КОДОМ)
   // ==========================================================================
   const SVG_AVATARS = {
@@ -474,7 +690,7 @@
 
   const defaultState = {
     team: 1,
-    stepsCount: 4,               // 4 або 6 перерв
+    stepsCount: 6,               // 6 перерв — стандарт за замовчуванням
     stepIndex: 0,                // скільки локацій завершено (0..stepsCount)
     completedLocations: [],      // масив id завершених локацій
     activeLocationId: null,      // поточна активна відкрита локація
@@ -483,7 +699,8 @@
     finalUnlocked: false,
     finalCompleted: false,
     selectedCharterRules: [],
-    musicEnabled: false,
+    musicEnabled: true,          // Музика увімкнена за замовчуванням при старті
+    hasStarted: false,           // Чи активовано стартову заставку "Розпочати розслідування"
     timestamp: Date.now()
   };
 
@@ -494,7 +711,12 @@
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        return Object.assign({}, defaultState, parsed);
+        const state = Object.assign({}, defaultState, parsed);
+        state.stepsCount = 6;
+        if (state.hasStarted === undefined) {
+          state.hasStarted = (state.stepIndex > 0 || state.completedLocations.length > 0 || state.finalCompleted);
+        }
+        return state;
       }
     } catch (e) {
       console.warn('Помилка читання localStorage:', e);
@@ -511,145 +733,255 @@
   }
 
   // ==========================================================================
-  // 6. АУДІО МЕНЕДЖЕР (BGM + VOICE З НАДІЙНИМ FALLBACK)
+  // 6. АУДІО КОНТРОЛЕР (ДЕТЕКТИВНИЙ ДУЕТ: ХРОНІКЕР ТА НАДІЯ + DUCKING)
   // ==========================================================================
-  const AudioManager = {
+  const AudioController = {
     bgmEl: document.getElementById('audio-bgm'),
     voiceEl: document.getElementById('audio-voice'),
+    currentAudioKey: null,
     currentPlayingCard: null,
     simulatedTimer: null,
+    duckInterval: null,
+    activeOnEndedCallback: null,
     audioCtx: null,
+
+    STANDARD_BGM_VOL: 0.35,
+    DUCKED_BGM_VOL: 0.12,
 
     init() {
       if (this.bgmEl) {
-        this.bgmEl.volume = 0.35;
+        this.bgmEl.volume = this.STANDARD_BGM_VOL;
+        if (gameState.musicEnabled) {
+          this.startBgmAuto();
+        }
       }
       if (this.voiceEl) {
         this.voiceEl.addEventListener('ended', () => {
-          this.stopVoiceVisuals();
+          this.onVoiceEnded();
         });
         this.voiceEl.addEventListener('timeupdate', () => {
           this.updateVoiceProgress();
         });
+        this.voiceEl.addEventListener('error', (e) => {
+          console.warn('Voice playback error, fallback to simulation:', e);
+          this.fallbackSimulatedPlayback();
+        });
+      }
+    },
+
+    setBgmVolumeSmooth(targetVol, durationMs = 400) {
+      if (!this.bgmEl) return;
+      clearInterval(this.duckInterval);
+      const startVol = this.bgmEl.volume;
+      const startTime = performance.now();
+      this.duckInterval = setInterval(() => {
+        const elapsed = performance.now() - startTime;
+        const p = Math.min(1, elapsed / durationMs);
+        this.bgmEl.volume = startVol + (targetVol - startVol) * p;
+        if (p >= 1) {
+          clearInterval(this.duckInterval);
+          this.duckInterval = null;
+        }
+      }, 30);
+    },
+
+    duckBgm() {
+      this.setBgmVolumeSmooth(this.DUCKED_BGM_VOL);
+    },
+
+    restoreBgm() {
+      this.setBgmVolumeSmooth(this.STANDARD_BGM_VOL);
+    },
+
+    startBgmAuto() {
+      if (!this.bgmEl) return;
+      const playPromise = this.bgmEl.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            gameState.musicEnabled = true;
+            UI.updateMusicButton();
+          })
+          .catch(() => {
+            gameState.musicEnabled = true;
+            UI.updateMusicButton();
+            const resumeOnFirstTouch = () => {
+              if (gameState.musicEnabled && this.bgmEl && this.bgmEl.paused) {
+                this.bgmEl.play().catch(() => {});
+              }
+              window.removeEventListener('click', resumeOnFirstTouch);
+              window.removeEventListener('touchstart', resumeOnFirstTouch);
+              window.removeEventListener('keydown', resumeOnFirstTouch);
+            };
+            window.addEventListener('click', resumeOnFirstTouch, { once: true });
+            window.addEventListener('touchstart', resumeOnFirstTouch, { once: true });
+            window.addEventListener('keydown', resumeOnFirstTouch, { once: true });
+          });
       }
     },
 
     toggleBgm() {
       if (!this.bgmEl) return;
-      if (gameState.musicEnabled) {
+      if (gameState.musicEnabled && !this.bgmEl.paused) {
         this.bgmEl.pause();
         gameState.musicEnabled = false;
       } else {
-        const playPromise = this.bgmEl.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              gameState.musicEnabled = true;
-            })
-            .catch(() => {
-              // Автоплей заблоковано браузером — увімкнеться після жесту
-              gameState.musicEnabled = true;
-            });
-        }
+        gameState.musicEnabled = true;
+        this.bgmEl.play().catch(() => {});
       }
       saveState();
       UI.updateMusicButton();
     },
 
-    playVoice(voiceNum, cardElement) {
-      // Якщо вже грає цей самий запис — ставимо на паузу
-      if (this.currentPlayingCard === cardElement) {
+    playAudio(audioKey, cardEl = null, onEndedCallback = null) {
+      const audioItem = AUDIO_FILES[audioKey];
+      if (!audioItem) {
+        console.warn('Unknown audio key:', audioKey);
+        return;
+      }
+
+      // Якщо вже грає цей самий файл — ставимо на паузу (toggle)
+      if (this.currentAudioKey === audioKey && this.voiceEl && !this.voiceEl.paused) {
         this.stopVoice();
         return;
       }
 
+      // Зупиняємо будь-який попередній голос (правило єдиного голосу)
       this.stopVoice();
-      this.currentPlayingCard = cardElement;
-      cardElement.classList.add('is-playing');
-      const playBtn = cardElement.querySelector('.btn-voice-play');
-      if (playBtn) {
-        playBtn.classList.add('playing');
-        playBtn.innerHTML = `
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <rect x="6" y="5" width="4" height="14" rx="1"></rect>
-            <rect x="14" y="5" width="4" height="14" rx="1"></rect>
-          </svg>
-        `;
+
+      this.currentAudioKey = audioKey;
+      this.currentPlayingCard = cardEl || document.querySelector(`[data-audio-key="${audioKey}"]`);
+      this.activeOnEndedCallback = onEndedCallback;
+
+      // Audio Ducking: плавно знижуємо BGM до 0.12
+      this.duckBgm();
+
+      if (this.currentPlayingCard) {
+        this.setCardPlayingVisual(this.currentPlayingCard, true);
       }
 
-      // Спроба відтворити MP3
-      const audioSources = [
-        `assets/audio/voice_nadiia_${voiceNum}.mp3`,
-        `voice_nadiia_${voiceNum}.mp3`
-      ];
-
-      let playedSuccessfully = false;
       if (this.voiceEl) {
-        this.voiceEl.src = audioSources[0];
+        this.voiceEl.src = audioItem.src;
+        this.voiceEl.currentTime = 0;
         const playPromise = this.voiceEl.play();
         if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              playedSuccessfully = true;
-            })
-            .catch(() => {
-              // Спробуємо запасний відносний шлях
-              this.voiceEl.src = audioSources[1];
+          playPromise.catch((err) => {
+            console.warn(`Primary audio source failed for ${audioKey}:`, err);
+            if (audioItem.fallbackSrc && audioItem.fallbackSrc !== audioItem.src) {
+              this.voiceEl.src = audioItem.fallbackSrc;
+              this.voiceEl.currentTime = 0;
               this.voiceEl.play().catch(() => {
-                this.fallbackSimulatedPlayback(voiceNum, cardElement);
+                this.fallbackSimulatedPlayback();
               });
-            });
+            } else {
+              this.fallbackSimulatedPlayback();
+            }
+          });
         }
       } else {
-        this.fallbackSimulatedPlayback(voiceNum, cardElement);
+        this.fallbackSimulatedPlayback();
       }
     },
 
-    fallbackSimulatedPlayback(voiceNum, cardElement) {
-      // Плавна анімація звукової хвилі навіть без аудіофайлу
-      let progress = 0;
-      const totalDuration = 14; // 14 секунд симуляції
-      const timeDisplay = cardElement.querySelector('.voice-time-current');
-      
+    playVoice(voiceNum, cardElement) {
+      this.playAudio(`voice_nadiia_${voiceNum}`, cardElement);
+    },
+
+    fallbackSimulatedPlayback() {
+      const card = this.currentPlayingCard;
+      if (!card) return;
+
       clearInterval(this.simulatedTimer);
+      let progress = 0;
+      const totalDuration = 12; // 12 секунд симуляції
+      const timeDisplay = card.querySelector('.audio-time-current') || card.querySelector('.voice-time-current');
+
       this.simulatedTimer = setInterval(() => {
         progress += 0.5;
         if (timeDisplay) {
-          const mins = Math.floor(progress / 60);
           const secs = Math.floor(progress % 60).toString().padStart(2, '0');
           timeDisplay.textContent = `0:${secs}`;
         }
         if (progress >= totalDuration) {
-          this.stopVoice();
+          this.onVoiceEnded();
         }
       }, 500);
 
-      // Автоматично відкриваємо розшифровку, якщо аудіо відсутнє
-      const transcriptEl = cardElement.querySelector('.voice-transcript-content');
-      if (transcriptEl) {
-        transcriptEl.classList.add('open');
+      const transcriptBox = card.querySelector('.audio-transcript-content') || card.querySelector('.voice-transcript-content');
+      if (transcriptBox) {
+        transcriptBox.classList.add('open');
       }
     },
 
     updateVoiceProgress() {
       if (!this.currentPlayingCard || !this.voiceEl) return;
-      const cur = this.voiceEl.currentTime;
-      const dur = this.voiceEl.duration || 14;
-      const timeDisplay = this.currentPlayingCard.querySelector('.voice-time-current');
-      if (timeDisplay) {
+      const cur = this.voiceEl.currentTime || 0;
+      const dur = this.voiceEl.duration || 0;
+      const curDisplay = this.currentPlayingCard.querySelector('.audio-time-current') || this.currentPlayingCard.querySelector('.voice-time-current');
+      const durDisplay = this.currentPlayingCard.querySelector('.audio-time-total');
+      if (curDisplay) {
+        const mins = Math.floor(cur / 60);
         const secs = Math.floor(cur % 60).toString().padStart(2, '0');
-        timeDisplay.textContent = `0:${secs}`;
+        curDisplay.textContent = `${mins}:${secs}`;
+      }
+      if (durDisplay && dur && !isNaN(dur) && isFinite(dur)) {
+        const dMins = Math.floor(dur / 60);
+        const dSecs = Math.floor(dur % 60).toString().padStart(2, '0');
+        durDisplay.textContent = `${dMins}:${dSecs}`;
+      }
+    },
+
+    onVoiceEnded() {
+      const cb = this.activeOnEndedCallback;
+      const endedKey = this.currentAudioKey;
+      this.stopVoice();
+      if (typeof cb === 'function') {
+        cb(endedKey);
       }
     },
 
     stopVoice() {
       if (this.voiceEl) {
-        this.voiceEl.pause();
+        try {
+          this.voiceEl.pause();
+        } catch (e) {}
       }
       clearInterval(this.simulatedTimer);
+      this.simulatedTimer = null;
+
       if (this.currentPlayingCard) {
-        this.currentPlayingCard.classList.remove('is-playing');
-        const playBtn = this.currentPlayingCard.querySelector('.btn-voice-play');
+        this.setCardPlayingVisual(this.currentPlayingCard, false);
+        this.currentPlayingCard = null;
+      }
+      document.querySelectorAll('.audio-player-card.is-playing, .voice-card.is-playing').forEach(c => {
+        this.setCardPlayingVisual(c, false);
+      });
+
+      this.currentAudioKey = null;
+      this.restoreBgm();
+    },
+
+    stopVoiceVisuals() {
+      this.stopVoice();
+    },
+
+    setCardPlayingVisual(card, isPlaying) {
+      if (!card) return;
+      const playBtn = card.querySelector('.btn-audio-play') || card.querySelector('.btn-voice-play');
+      if (isPlaying) {
+        card.classList.add('is-playing');
+        if (playBtn) {
+          playBtn.classList.add('playing');
+          playBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <rect x="6" y="5" width="4" height="14" rx="1"></rect>
+              <rect x="14" y="5" width="4" height="14" rx="1"></rect>
+            </svg>
+          `;
+          playBtn.setAttribute('title', 'Пауза');
+        }
+      } else {
+        card.classList.remove('is-playing');
         if (playBtn) {
           playBtn.classList.remove('playing');
           playBtn.innerHTML = `
@@ -657,17 +989,12 @@
               <polygon points="6 4 20 12 6 20 6 4"></polygon>
             </svg>
           `;
+          playBtn.setAttribute('title', 'Слухати аудіо');
         }
-        this.currentPlayingCard = null;
       }
     },
 
-    stopVoiceVisuals() {
-      this.stopVoice();
-    },
-
     playChime(type) {
-      // Легкий синтезатор тонів через Web Audio API для кліків та успіху
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
@@ -682,9 +1009,9 @@
 
         const now = this.audioCtx.currentTime;
         if (type === 'success') {
-          osc.frequency.setValueAtTime(523.25, now); // C5
-          osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
-          osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1);
+          osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2);
           gain.gain.setValueAtTime(0.15, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
           osc.start(now);
@@ -704,9 +1031,265 @@
           osc.start(now);
           osc.stop(now + 0.08);
         }
-      } catch (e) {
-        // Ігноруємо беззвучні середовища
+      } catch (e) {}
+    }
+  };
+
+  const AudioManager = AudioController; // Для 100% сумісності
+
+  // Створення DOM-елемента аудіоплеєра для двох голосів
+  function createAudioPlayerElement(audioKey, customOptions = {}) {
+    const item = AUDIO_FILES[audioKey];
+    if (!item) return document.createElement('div');
+
+    const card = document.createElement('div');
+    card.className = `audio-player-card audio-card-${item.speaker}`;
+    card.setAttribute('data-audio-key', audioKey);
+
+    let badgeHtml = '';
+    let btnPlayClass = `btn-audio-play ${item.speaker}`;
+    if (item.speaker === 'narrator') {
+      badgeHtml = `
+        <div class="audio-badge narrator-badge">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path>
+          </svg>
+          <span>🎙️ Хронікер розслідування (Аудіопротокол)</span>
+        </div>
+      `;
+    } else if (item.speaker === 'nadiia') {
+      badgeHtml = `
+        <div class="audio-badge nadiia-badge">
+          <div class="nadiia-mini-avatar">${SVG_AVATARS.nadiia}</div>
+          <span>🎧 Особистий запис Надії</span>
+        </div>
+      `;
+    } else {
+      badgeHtml = `
+        <div class="audio-badge mediator-badge">
+          <span>🤝 Служба медіації (Каб. 16)</span>
+        </div>
+      `;
+    }
+
+    // 24 анімовані смужки звукової хвилі
+    let barsHtml = '';
+    const barHeights = [6, 12, 18, 10, 22, 14, 8, 20, 16, 24, 12, 18, 22, 14, 8, 16, 20, 10, 18, 14, 22, 12, 8, 16];
+    barHeights.forEach((h, idx) => {
+      const x = idx * 9;
+      const y = (26 - h) / 2;
+      barsHtml += `<rect class="audio-bar" x="${x}" y="${y}" width="4.5" height="${h}" rx="2"></rect>`;
+    });
+
+    card.innerHTML = `
+      <div class="audio-card-top">
+        ${badgeHtml}
+        <div class="audio-card-speaker-role">${item.speakerRole}</div>
+      </div>
+      <div class="audio-card-title">${item.title}</div>
+      <div class="audio-player-main">
+        <button class="${btnPlayClass}" title="Слухати аудіо" aria-label="Слухати ${item.title}">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <polygon points="6 4 20 12 6 20 6 4"></polygon>
+          </svg>
+        </button>
+        <div class="audio-waveform-wrap">
+          <svg class="audio-waveform-svg" viewBox="0 0 216 26">
+            ${barsHtml}
+          </svg>
+          <div class="audio-progress-row">
+            <span class="audio-time-current">0:00</span>
+            <span class="audio-time-total">--:--</span>
+          </div>
+        </div>
+      </div>
+      <div class="audio-transcript-toggle">
+        <button class="btn-audio-transcript" type="button">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span class="transcript-btn-text">Читати розшифровку</span>
+        </button>
+      </div>
+      <div class="audio-transcript-content">
+        ${item.transcript}
+      </div>
+    `;
+
+    const playBtn = card.querySelector('.btn-audio-play');
+    playBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      AudioController.playAudio(audioKey, card);
+    });
+
+    const transcriptBtn = card.querySelector('.btn-audio-transcript');
+    const transcriptContent = card.querySelector('.audio-transcript-content');
+    const transcriptBtnText = card.querySelector('.transcript-btn-text');
+    transcriptBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = transcriptContent.classList.toggle('open');
+      transcriptBtnText.textContent = isOpen ? 'Сховати текст' : 'Читати розшифровку';
+    });
+
+    return card;
+  }
+
+  // ==========================================================================
+  // 6.1. СКАНЕР QR-КОДУ (ОПТИМІЗАЦІЯ ЖИТТЄВОГО ЦИКЛУ КАМЕРИ)
+  // ==========================================================================
+  const QRScannerManager = {
+    videoEl: null,
+    statusOverlay: null,
+    statusText: null,
+    stream: null,
+    animFrameId: null,
+    detector: null,
+    isScanning: false,
+
+    init() {
+      this.videoEl = document.getElementById('qr-video');
+      this.statusOverlay = document.getElementById('qr-status-overlay');
+      this.statusText = document.getElementById('qr-status-text');
+
+      if ('BarcodeDetector' in window) {
+        try {
+          this.detector = new BarcodeDetector({ formats: ['qr_code'] });
+        } catch (e) {
+          this.detector = null;
+        }
       }
+    },
+
+    async startScan() {
+      if (this.isScanning) return;
+      if (!UI.modalQr) return;
+
+      UI.modalQr.classList.add('active');
+      this.isScanning = true;
+      this.showStatus('Запуск камери...', true);
+
+      // Перевіряємо наявність підтримки медіапристроїв
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        this.showStatus('Ваш браузер не підтримує прямий доступ до камери. Скористайтеся ручним введенням коду.', false);
+        return;
+      }
+
+      try {
+        const constraints = {
+          video: {
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 640 },
+            height: { ideal: 640 }
+          },
+          audio: false
+        };
+
+        this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        if (!this.isScanning) {
+          // Якщо користувач закрив модальне вікно до підключення потоку
+          this.stopScan();
+          return;
+        }
+
+        if (this.videoEl) {
+          this.videoEl.srcObject = this.stream;
+          await this.videoEl.play();
+          this.hideStatus();
+          this.scanLoop();
+        }
+      } catch (err) {
+        console.warn('Camera access error:', err);
+        let msg = 'Не вдалося підключити камеру.';
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          msg = 'Доступ до камери відхилено. Надайте дозвіл у налаштуваннях браузера або введіть код вручну.';
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+          msg = 'Камеру на цьому пристрої не виявлено.';
+        }
+        this.showStatus(msg, false);
+      }
+    },
+
+    scanLoop() {
+      if (!this.isScanning || !this.videoEl) return;
+
+      if (this.videoEl.readyState >= this.videoEl.HAVE_ENOUGH_DATA) {
+        this.detectBarcode();
+      }
+
+      this.animFrameId = requestAnimationFrame(() => this.scanLoop());
+    },
+
+    async detectBarcode() {
+      if (!this.isScanning || !this.detector) return;
+      try {
+        const barcodes = await this.detector.detect(this.videoEl);
+        if (barcodes && barcodes.length > 0) {
+          const rawValue = barcodes[0].rawValue;
+          if (rawValue) {
+            this.handleDetectedCode(rawValue);
+          }
+        }
+      } catch (e) {
+        // Пропускаємо одиничний кадр
+      }
+    },
+
+    handleDetectedCode(text) {
+      if (!text) return;
+      // МИТТЄВО ВИМИКАЄМО ВСІ ТРЕКИ КАМЕРИ
+      this.stopScan();
+
+      AudioManager.playChime('success');
+      UI.processScannedCode(text);
+    },
+
+    stopScan() {
+      this.isScanning = false;
+
+      // 1. Зупиняємо анімаційний кадр
+      if (this.animFrameId) {
+        cancelAnimationFrame(this.animFrameId);
+        this.animFrameId = null;
+      }
+
+      // 2. Миттєво гасимо камеру на рівні пристрою (індикатор камери згасає)
+      if (this.stream) {
+        this.stream.getTracks().forEach(track => {
+          try {
+            track.stop();
+          } catch (e) {}
+        });
+        this.stream = null;
+      }
+
+      // 3. Від'єднуємо відеоелемент
+      if (this.videoEl) {
+        try {
+          this.videoEl.pause();
+        } catch (e) {}
+        this.videoEl.srcObject = null;
+      }
+
+      // 4. Закриваємо модальне вікно сканера
+      if (UI.modalQr) {
+        UI.modalQr.classList.remove('active');
+      }
+    },
+
+    showStatus(message, showSpinner = false) {
+      if (this.statusText) this.statusText.textContent = message;
+      const sp = document.getElementById('qr-spinner');
+      if (sp) sp.style.display = showSpinner ? 'block' : 'none';
+      if (this.statusOverlay) this.statusOverlay.classList.remove('hidden');
+    },
+
+    hideStatus() {
+      if (this.statusOverlay) this.statusOverlay.classList.add('hidden');
     }
   };
 
@@ -719,9 +1302,7 @@
   }
 
   function getActiveRouteList() {
-    const fullRoute = getTeamRoute(gameState.team);
-    const limit = Math.min(fullRoute.length, gameState.stepsCount || 4);
-    return fullRoute.slice(0, limit);
+    return getTeamRoute(gameState.team);
   }
 
   function getCurrentExpectedLocation() {
@@ -749,6 +1330,7 @@
     dossierUnreadDot: document.getElementById('dossier-unread-dot'),
 
     // Модальні вікна
+    modalQr: document.getElementById('modal-qr'),
     modalCode: document.getElementById('modal-code'),
     modalSettings: document.getElementById('modal-settings'),
     modalCertificate: document.getElementById('modal-certificate'),
@@ -758,6 +1340,7 @@
     enteredPin: '',
 
     init() {
+      this.initStartSplash();
       this.renderHeaderAvatars();
       this.updateMusicButton();
       this.updateProgressIndicator();
@@ -767,13 +1350,52 @@
       this.checkUrlParameters();
     },
 
+    initStartSplash() {
+      const splash = document.getElementById('start-splash-screen');
+      const startBtn = document.getElementById('btn-start-investigation');
+      const teamBadge = document.getElementById('splash-team-badge');
+
+      if (teamBadge) {
+        teamBadge.textContent = `Слідча Команда №${gameState.team}`;
+      }
+
+      if (splash) {
+        if (!gameState.hasStarted) {
+          splash.style.display = 'flex';
+          splash.classList.remove('hidden');
+        } else {
+          splash.style.display = 'none';
+          splash.classList.add('hidden');
+        }
+      }
+
+      if (startBtn) {
+        startBtn.onclick = () => {
+          gameState.hasStarted = true;
+          saveState();
+          if (splash) {
+            splash.classList.add('hidden');
+            setTimeout(() => {
+              splash.style.display = 'none';
+            }, 350);
+          }
+          AudioController.startBgmAuto();
+          // Автоматично запускаємо narrator_intro, а по закінченні - voice_intro
+          AudioController.playAudio('narrator_intro', null, () => {
+            setTimeout(() => {
+              AudioController.playAudio('voice_intro');
+            }, 1000);
+          });
+        };
+      }
+    },
+
     renderHeaderAvatars() {
       if (!this.headerStack) return;
       this.headerStack.innerHTML = `
         <div class="stack-avatar" title="${CHARACTERS.sofiia.name}">${CHARACTERS.sofiia.avatar}</div>
         <div class="stack-avatar" title="${CHARACTERS.maksym.name}">${CHARACTERS.maksym.avatar}</div>
         <div class="stack-avatar" title="${CHARACTERS.denys.name}">${CHARACTERS.denys.avatar}</div>
-        <div class="stack-avatar" title="${CHARACTERS.lera.name}">${CHARACTERS.lera.avatar}</div>
       `;
     },
 
@@ -858,10 +1480,38 @@
       if (btnEvidenceBadge) btnEvidenceBadge.addEventListener('click', openDossier);
       if (btnBackToChat) btnBackToChat.addEventListener('click', closeDossier);
 
-      // Кнопки швидкого виклику коду
-      const btnEnterCodeBar = document.getElementById('btn-enter-code-bar');
-      if (btnEnterCodeBar) {
-        btnEnterCodeBar.addEventListener('click', () => this.openCodeModal());
+      // Сканування QR-коду (камера активується лише при відкритті)
+      const btnScanQrBar = document.getElementById('btn-scan-qr-bar');
+      if (btnScanQrBar) {
+        btnScanQrBar.addEventListener('click', () => {
+          QRScannerManager.startScan();
+        });
+      }
+
+      // Закриття сканера QR-коду (миттєво вимикає всі треки камери)
+      const btnCloseQrModal = document.getElementById('btn-close-qr-modal');
+      if (btnCloseQrModal) {
+        btnCloseQrModal.addEventListener('click', () => {
+          QRScannerManager.stopScan();
+        });
+      }
+
+      // Перемикання зі сканера на екран 4-значного PIN
+      const btnSwitchToPin = document.getElementById('btn-switch-to-pin');
+      if (btnSwitchToPin) {
+        btnSwitchToPin.addEventListener('click', () => {
+          QRScannerManager.stopScan();
+          this.openCodeModal();
+        });
+      }
+
+      // Клік поза межами модального вікна сканера
+      if (this.modalQr) {
+        this.modalQr.addEventListener('click', (e) => {
+          if (e.target === this.modalQr) {
+            QRScannerManager.stopScan();
+          }
+        });
       }
 
       const btnQuickClue = document.getElementById('btn-quick-clue');
@@ -881,30 +1531,11 @@
         btnCloseSettings.addEventListener('click', () => this.closeSettingsModal());
       }
 
-      // Налаштування команд
-      const teamBtns = document.querySelectorAll('.team-select-btn');
-      teamBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const t = parseInt(e.target.dataset.team, 10);
-          this.changeTeam(t);
-        });
-      });
-
-      // Налаштування кількості перерв
-      const btnSteps4 = document.getElementById('btn-steps-4');
-      const btnSteps6 = document.getElementById('btn-steps-6');
-      if (btnSteps4) {
-        btnSteps4.addEventListener('click', () => this.changeStepsCount(4));
-      }
-      if (btnSteps6) {
-        btnSteps6.addEventListener('click', () => this.changeStepsCount(6));
-      }
-
-      // Скидання прогресу
+      // Скидання прогресу (локально на цьому телефоні, без пароля)
       const btnReset = document.getElementById('btn-reset-progress');
       if (btnReset) {
         btnReset.addEventListener('click', () => {
-          if (confirm('Скинути весь прогрес слідства та розпочати розслідування спочатку?')) {
+          if (confirm('Скинути слідство на цьому телефоні та розпочати заново?')) {
             this.resetAllProgress();
           }
         });
@@ -935,7 +1566,12 @@
 
       // Клавіатурне введення для десктопу
       window.addEventListener('keydown', (e) => {
-        if (this.modalCode.classList.contains('active')) {
+        if (this.modalQr && this.modalQr.classList.contains('active')) {
+          if (e.key === 'Escape') {
+            QRScannerManager.stopScan();
+          }
+        }
+        if (this.modalCode && this.modalCode.classList.contains('active')) {
           if (e.key >= '0' && e.key <= '9') {
             this.handlePinInput(e.key);
           } else if (e.key === 'Backspace') {
@@ -976,6 +1612,15 @@
       // ----------------------------------------------------------------------
       // ЕТАП 0: СТАРТ РОЗСЛІДУВАННЯ (ОБОВ'ЯЗКОВО ДЛЯ ВСІХ)
       // ----------------------------------------------------------------------
+      // 1. Вступний аудіобрифінг Хронікера (Євгеній Шевченко)
+      const narratorIntroCard = createAudioPlayerElement('narrator_intro');
+      this.chatStream.appendChild(narratorIntroCard);
+
+      // 2. Вступне особисте звернення Надії (у робочому блокноті)
+      const nadiiaIntroCard = createAudioPlayerElement('voice_intro');
+      nadiiaIntroCard.style.marginTop = '6px';
+      this.chatStream.appendChild(nadiiaIntroCard);
+
       this.appendSystemNotice('08:14 — Надія Кравчук покинула бесіду "Оргкомітет виставки"', 'alert');
 
       this.appendChatMessage(
@@ -1044,11 +1689,25 @@
             CHARACTERS.maksym,
             '«І я не правий. Замість того, щоб розподілити роботу чесно, я просто спихнув усе на Надю, бо знав, що вона відповідальна і не відмовить».'
           );
-        } else if (s >= 3 && s < route.length - 1) {
-          // Проміжні репліки для формату на 6 перерв
+        } else if (s === 3) {
+          // Після 4-ї локації
           this.appendChatMessage(
             CHARACTERS.lera,
-            '«Кожне свідчення розкриває все глибший ланцюжок. Ми не помічали, як руйнуємо довіру...»'
+            '«Тепер я розумію: коли ми просто спостерігали і не втручалися, ми ставали співучасниками цього тиску».'
+          );
+          this.appendChatMessage(
+            CHARACTERS.sofiia,
+            '«Саме так. Булінг тримається на мовчанні більшості. Але ми вже розкриваємо цей ланцюжок і разом знайдемо вихід».'
+          );
+        } else if (s === 4) {
+          // Після 5-ї локації
+          this.appendChatMessage(
+            CHARACTERS.denys,
+            '«Залишився останній доказ перед тим, як ми зможемо скласти повну картину й повернути Надю».'
+          );
+          this.appendChatMessage(
+            CHARACTERS.maksym,
+            '«Давайте завершимо це розслідування гідно. Кожен висновок має значення для всього класу».'
           );
         }
       }
@@ -1106,78 +1765,8 @@
     },
 
     appendVoiceMessage(voiceNum, label) {
-      const transcript = VOICE_TRANSCRIPTS[voiceNum] || '';
-      const voiceDiv = document.createElement('div');
-      voiceDiv.className = 'voice-card';
-      voiceDiv.innerHTML = `
-        <div class="voice-card-top">
-          <div class="voice-badge">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-            </svg>
-            <span>${label}</span>
-          </div>
-          <span class="voice-time-current" style="font-size:11px; color:#93c5fd; font-family:monospace;">0:00</span>
-        </div>
-
-        <div class="voice-player-main">
-          <button class="btn-voice-play" data-voice="${voiceNum}" aria-label="Відтворити запис">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-              <polygon points="6 4 20 12 6 20 6 4"></polygon>
-            </svg>
-          </button>
-          
-          <div class="voice-waveform-wrap">
-            <svg class="voice-waveform-svg" viewBox="0 0 160 26" preserveAspectRatio="none">
-              <!-- Анімовані векторні смужки звукової хвилі -->
-              <rect class="waveform-bar" x="4" y="6" width="4" height="14" rx="2"/>
-              <rect class="waveform-bar" x="12" y="3" width="4" height="20" rx="2"/>
-              <rect class="waveform-bar" x="20" y="8" width="4" height="10" rx="2"/>
-              <rect class="waveform-bar" x="28" y="2" width="4" height="22" rx="2"/>
-              <rect class="waveform-bar" x="36" y="5" width="4" height="16" rx="2"/>
-              <rect class="waveform-bar" x="44" y="9" width="4" height="8" rx="2"/>
-              <rect class="waveform-bar" x="52" y="2" width="4" height="22" rx="2"/>
-              <rect class="waveform-bar" x="60" y="7" width="4" height="12" rx="2"/>
-              <rect class="waveform-bar" x="68" y="4" width="4" height="18" rx="2"/>
-              <rect class="waveform-bar" x="76" y="8" width="4" height="10" rx="2"/>
-              <rect class="waveform-bar" x="84" y="2" width="4" height="22" rx="2"/>
-              <rect class="waveform-bar" x="92" y="6" width="4" height="14" rx="2"/>
-              <rect class="waveform-bar" x="100" y="3" width="4" height="20" rx="2"/>
-              <rect class="waveform-bar" x="108" y="7" width="4" height="12" rx="2"/>
-              <rect class="waveform-bar" x="116" y="2" width="4" height="22" rx="2"/>
-              <rect class="waveform-bar" x="124" y="6" width="4" height="14" rx="2"/>
-              <rect class="waveform-bar" x="132" y="9" width="4" height="8" rx="2"/>
-              <rect class="waveform-bar" x="140" y="4" width="4" height="18" rx="2"/>
-              <rect class="waveform-bar" x="148" y="7" width="4" height="12" rx="2"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="voice-transcript-toggle">
-          <button class="btn-text-transcript" type="button">
-            <span>📝 Текстова розшифровка запису</span>
-          </button>
-        </div>
-
-        <div class="voice-transcript-content">
-          ${transcript}
-        </div>
-      `;
-
-      // Прив'язка подій плеєра
-      const playBtn = voiceDiv.querySelector('.btn-voice-play');
-      playBtn.addEventListener('click', () => {
-        AudioManager.playVoice(voiceNum, voiceDiv);
-      });
-
-      const transcriptBtn = voiceDiv.querySelector('.btn-text-transcript');
-      const transcriptBox = voiceDiv.querySelector('.voice-transcript-content');
-      transcriptBtn.addEventListener('click', () => {
-        transcriptBox.classList.toggle('open');
-      });
-
-      this.chatStream.appendChild(voiceDiv);
+      const card = createAudioPlayerElement(`voice_nadiia_${voiceNum}`);
+      this.chatStream.appendChild(card);
     },
 
     appendClueCard(stepNumber, location) {
@@ -1238,10 +1827,17 @@
           <span class="testimony-time">${location.testimonyTime}</span>
         </div>
 
+        <!-- 1. Аудіопротокол Хронікера розслідування -->
+        <div class="testimony-narrator-slot" id="narrator-slot-${location.id}"></div>
+
+        <!-- 2. Свідчення вчителя -->
         <div class="testimony-text-box">
           <span class="testimony-label">Побачене вчителем:</span>
           <div class="testimony-quote">«${location.testimonyText}»</div>
         </div>
+
+        <!-- 3. Голосовий щоденник Надії про цей випадок -->
+        <div class="testimony-nadiia-slot" id="nadiia-slot-${location.id}"></div>
 
         <div class="conclusions-group">
           <div class="conclusions-title">Оберіть точний висновок слідчої комісії:</div>
@@ -1254,6 +1850,16 @@
         <div class="minigame-placeholder" id="minigame-loc-${location.id}"></div>
       `;
 
+      // Вставляємо аудіоплеєри двох голосів
+      const narratorSlot = cardDiv.querySelector(`#narrator-slot-${location.id}`);
+      const nadiiaSlot = cardDiv.querySelector(`#nadiia-slot-${location.id}`);
+
+      const narratorCard = createAudioPlayerElement(`narrator_station_${location.id}`);
+      narratorSlot.appendChild(narratorCard);
+
+      const nadiiaCard = createAudioPlayerElement(`voice_station_${location.id}`);
+      nadiiaSlot.appendChild(nadiiaCard);
+
       // Прив'язка вибору висновку
       if (!isAlreadyCompleted) {
         const btns = cardDiv.querySelectorAll('.conclusion-btn');
@@ -1263,6 +1869,11 @@
             this.handleConclusionPick(location, idx, cardDiv);
           });
         });
+
+        // Автоматичне відтворення аудіопротоколу Хронікера при відкритті
+        setTimeout(() => {
+          AudioController.playAudio(`narrator_station_${location.id}`, narratorCard);
+        }, 120);
       }
 
       this.chatStream.appendChild(cardDiv);
@@ -1767,7 +2378,8 @@
         <div class="recess-status-pill">
           Пройдено станцій: <strong>${current} з ${total}</strong>
         </div>
-        <button class="btn-recess-resume" id="btn-recess-resume">
+        <div id="recess-audio-slot"></div>
+        <button class="btn-recess-resume" id="btn-recess-resume" style="margin-top:12px;">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="5 3 19 12 5 21 5 3"></polygon>
           </svg>
@@ -1775,8 +2387,17 @@
         </button>
       `;
 
+      const audioSlot = card.querySelector('#recess-audio-slot');
+      const narratorPauseCard = createAudioPlayerElement('narrator_lesson_pause');
+      audioSlot.appendChild(narratorPauseCard);
+
+      setTimeout(() => {
+        AudioController.playAudio('narrator_lesson_pause', narratorPauseCard);
+      }, 120);
+
       const resumeBtn = card.querySelector('#btn-recess-resume');
       resumeBtn.addEventListener('click', () => {
+        AudioController.stopVoice();
         gameState.inRecessMode = false;
         saveState();
         this.updateProgressIndicator();
@@ -1800,9 +2421,23 @@
       this.appendVoiceMessage(4, 'Голосове повідомлення Надії №4 (Фінал)');
 
       if (!gameState.finalCompleted) {
+        // Запрошення до Штабу Примирення від Хронікера
+        const narratorInviteCard = createAudioPlayerElement('narrator_hq_invite');
+        this.chatStream.appendChild(narratorInviteCard);
+
+        // Резервний слот служби медіації
+        const mediatorHqCard = createAudioPlayerElement('voice_mediator_hq');
+        mediatorHqCard.style.marginTop = '8px';
+        this.chatStream.appendChild(mediatorHqCard);
+
+        setTimeout(() => {
+          AudioController.playAudio('narrator_hq_invite', narratorInviteCard);
+        }, 120);
+
         // Картка введення коду 1616
         const hqCard = document.createElement('div');
         hqCard.className = 'final-hq-card';
+        hqCard.style.marginTop = '14px';
         hqCard.innerHTML = `
           <div class="final-hq-badge">ФІНАЛЬНА ТОЧКА МАРШРУТУ</div>
           <h3 class="final-hq-title">${FINAL_HQ.leadTitle}</h3>
@@ -1896,6 +2531,24 @@
       // Системне повернення Надії
       this.appendSystemNotice('09:30 — Надія Кравчук повернулася до бесіди "Оргкомітет виставки"', 'reconcile');
 
+      // 1. Фінальний вердикт Хронікера (Євгеній Шевченко)
+      const narratorFinaleCard = createAudioPlayerElement('narrator_finale');
+      this.chatStream.appendChild(narratorFinaleCard);
+
+      // 2. Фінальна промова подяки Надії
+      const nadiiaFinaleCard = createAudioPlayerElement('voice_nadiia_finale');
+      nadiiaFinaleCard.style.marginTop = '8px';
+      this.chatStream.appendChild(nadiiaFinaleCard);
+
+      // Автоматичне послідовне відтворення: Хронікер -> Надія (через 1с)
+      setTimeout(() => {
+        AudioController.playAudio('narrator_finale', narratorFinaleCard, () => {
+          setTimeout(() => {
+            AudioController.playAudio('voice_nadiia_finale', nadiiaFinaleCard);
+          }, 1000);
+        });
+      }, 120);
+
       // Репліки персонажів
       this.appendChatMessage(
         CHARACTERS.nadiia,
@@ -1958,42 +2611,47 @@
     // 13. ДОШКА РОЗСЛІДУВАННЯ (DOSSIER VIEW)
     // ========================================================================
     renderDossierBoard() {
-      // 1. Картки 6 локацій
+      // 1. Картки 6 локацій — ТІЛЬКИ РОЗКРИТІ СТАНЦІЇ! Решта — ЗАСЕКРЕЧЕНО ТА ЗАБЛЮРЕНО
       const locGrid = document.getElementById('locations-dossier-grid');
       if (locGrid) {
         locGrid.innerHTML = '';
-        const route = getActiveRouteList();
 
         for (let i = 1; i <= 6; i++) {
           const loc = LOCATIONS[i];
           const isCompleted = gameState.completedLocations.includes(i);
-          const isExpected = getCurrentExpectedLocation() && getCurrentExpectedLocation().id === i;
-
-          let tagClass = 'tag-locked';
-          let tagText = 'Заблоковано';
-          let cardClass = 'dossier-loc-card locked';
-
-          if (isCompleted) {
-            tagClass = 'tag-done';
-            tagText = 'Розкрито ✓';
-            cardClass = 'dossier-loc-card unlocked';
-          } else if (isExpected) {
-            tagClass = 'tag-pending';
-            tagText = 'Поточна ціль ➔';
-            cardClass = 'dossier-loc-card';
-          }
 
           const c = document.createElement('div');
-          c.className = cardClass;
-          c.innerHTML = `
-            <div class="dossier-loc-top">
-              <span class="dossier-loc-name">Станція ${i}: ${loc.name}</span>
-              <span class="dossier-loc-tag ${tagClass}">${tagText}</span>
-            </div>
-            <div class="dossier-loc-insight">
-              ${isCompleted ? `<strong>Інсайт:</strong> ${loc.category}` : `<em>Зачіпка:</em> «${loc.riddle}»`}
-            </div>
-          `;
+          if (isCompleted) {
+            c.className = 'dossier-loc-card unlocked';
+            c.innerHTML = `
+              <div class="dossier-loc-top">
+                <span class="dossier-loc-name">Станція ${i}: ${loc.name}</span>
+                <span class="dossier-loc-tag tag-done">Розкрито ✓</span>
+              </div>
+              <div class="dossier-loc-insight">
+                <div><strong>Встановлений інсайт:</strong> ${loc.category}</div>
+                <div style="font-size:11px; color:#94a3b8; margin-top:3px;">${loc.testimonyTime}</div>
+              </div>
+            `;
+          } else {
+            c.className = 'dossier-loc-card locked';
+            c.innerHTML = `
+              <div class="dossier-loc-top">
+                <span class="dossier-loc-name">Секретний доказ №${i}</span>
+                <span class="dossier-loc-tag tag-locked">Засекречено 🔒</span>
+              </div>
+              <div class="dossier-classified-box">
+                <div class="dossier-classified-stamp">ЗАСЕКРЕЧЕНО</div>
+                <div class="dossier-classified-blur">
+                  ████████████████████████████████████████████████████████████████████
+                  Свідчення вчителя та назва локації зашифровані до очного отримання свідчення на станції.
+                </div>
+                <div class="dossier-classified-hint">
+                  🔒 Відомості буде розсекречено лише після відвідання станції
+                </div>
+              </div>
+            `;
+          }
           locGrid.appendChild(c);
         }
       }
@@ -2034,37 +2692,82 @@
         });
       }
 
-      // 3. Архів голосових
+      // 3. Архів голосових — ТІЛЬКИ ФАКТИЧНО ВІДКРИТІ ЗАПИСИ
       const voiceList = document.getElementById('voice-archives-list');
       if (voiceList) {
         voiceList.innerHTML = '';
-        for (let v = 1; v <= 4; v++) {
-          const isUnlocked = v === 1 || (v === 2 && gameState.stepIndex >= 1) || (v === 3 && gameState.stepIndex >= 2) || (v === 4 && gameState.stepIndex >= getActiveRouteList().length);
-          const vItem = document.createElement('div');
-          vItem.className = 'voice-archive-item';
-          vItem.innerHTML = `
-            <div class="voice-archive-info">
-              <div class="voice-archive-title">Голосовий запис Надії №${v}</div>
-              <div class="voice-archive-sub">${isUnlocked ? 'Доступно для прослуховування' : 'Буде розблоковано за ходом розслідування'}</div>
-            </div>
-            <div>
-              <button class="btn-icon" data-archive-voice="${v}" ${isUnlocked ? '' : 'disabled style="opacity:0.3"'}>
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                </svg>
-              </button>
-            </div>
-          `;
 
-          const btn = vItem.querySelector('button');
-          if (btn && isUnlocked) {
-            btn.addEventListener('click', () => {
-              alert(`Запис №${v}:\n\n${VOICE_TRANSCRIPTS[v]}`);
-            });
+        const archiveItems = [
+          { key: 'voice_intro', title: 'Вступне звернення Надії', unlocked: true },
+          { key: 'voice_nadiia_1', title: 'Голосова чернетка №1: Порожні стенди', unlocked: true },
+          { key: 'voice_station_1', title: 'Спогад Надії: Каб. інформатики', unlocked: gameState.completedLocations.includes(1) },
+          { key: 'voice_station_2', title: 'Спогад Надії: Каб. математики', unlocked: gameState.completedLocations.includes(2) },
+          { key: 'voice_station_3', title: 'Спогад Надії: Фізика та хімія', unlocked: gameState.completedLocations.includes(3) },
+          { key: 'voice_station_4', title: 'Спогад Надії: Каб. літератури', unlocked: gameState.completedLocations.includes(4) },
+          { key: 'voice_station_5', title: 'Спогад Надії: Каб. історії', unlocked: gameState.completedLocations.includes(5) },
+          { key: 'voice_station_6', title: 'Спогад Надії: Каб. біології', unlocked: gameState.completedLocations.includes(6) },
+          { key: 'voice_nadiia_2', title: 'Голосова чернетка №2: Знецінення', unlocked: gameState.stepIndex >= 1 },
+          { key: 'voice_nadiia_3', title: 'Голосова чернетка №3: Мовчання свідків', unlocked: gameState.stepIndex >= 2 },
+          { key: 'voice_nadiia_4', title: 'Голосова чернетка №4: Безпечне місце', unlocked: (gameState.stepIndex >= getActiveRouteList().length || gameState.finalUnlocked) },
+          { key: 'voice_nadiia_finale', title: 'Фінальна промова подяки Надії', unlocked: gameState.finalCompleted }
+        ];
+
+        archiveItems.forEach(item => {
+          const vItem = document.createElement('div');
+          const audioData = AUDIO_FILES[item.key];
+
+          if (item.unlocked && audioData) {
+            vItem.className = 'voice-archive-item';
+            vItem.innerHTML = `
+              <div class="voice-archive-info" style="flex:1;">
+                <div class="voice-archive-title" style="font-weight:700;">${item.title}</div>
+                <div class="voice-archive-sub" style="color:#34d399; font-size:11px;">Доступно для прослуховування ✓</div>
+                <div class="archive-transcript-text" style="display:none; margin-top:6px; font-size:11px; line-height:1.4; color:#cbd5e1; background:rgba(0,0,0,0.3); padding:6px 8px; border-radius:4px; border-left:2px solid #10b981;">
+                  ${audioData.transcript}
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <button class="btn-icon btn-toggle-trans" title="Розгорнути текст" style="font-size:12px; padding:4px 6px;">
+                  📄
+                </button>
+                <button class="btn-icon btn-play-archive" title="Слухати запис">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                </button>
+              </div>
+            `;
+
+            const playBtn = vItem.querySelector('.btn-play-archive');
+            if (playBtn) {
+              playBtn.addEventListener('click', () => {
+                AudioController.playAudio(item.key);
+              });
+            }
+
+            const transBtn = vItem.querySelector('.btn-toggle-trans');
+            const transBox = vItem.querySelector('.archive-transcript-text');
+            if (transBtn && transBox) {
+              transBtn.addEventListener('click', () => {
+                const isShown = transBox.style.display !== 'none';
+                transBox.style.display = isShown ? 'none' : 'block';
+              });
+            }
+          } else {
+            vItem.className = 'voice-archive-item locked';
+            vItem.innerHTML = `
+              <div class="voice-archive-info">
+                <div class="voice-archive-title" style="color:#94a3b8;">${item.title} [ЗАСЕКРЕЧЕНО]</div>
+                <div class="voice-archive-sub" style="color:#64748b; font-size:11px;">Запис зашифровано до розкриття відповідного етапу</div>
+              </div>
+              <div>
+                <span style="font-size:16px; opacity:0.4;">🔒</span>
+              </div>
+            `;
           }
 
           voiceList.appendChild(vItem);
-        }
+        });
       }
     },
 
@@ -2198,30 +2901,21 @@
     },
 
     // ========================================================================
-    // 15. НАЛАШТУВАННЯ ОРГАНІЗАТОРА (КОМАНДИ, ПЕРЕРВИ, СКИДАННЯ)
+    // 15. НАЛАШТУВАННЯ КВЕСТУ (ПРИВ'ЯЗКА КОМАНДИ, ПЕРЕРВИ, СКИДАННЯ)
     // ========================================================================
     openSettingsModal() {
-      // Підсвічуємо поточну команду
-      const teamBtns = document.querySelectorAll('.team-select-btn');
-      teamBtns.forEach(b => {
-        if (parseInt(b.dataset.team, 10) === gameState.team) b.classList.add('active');
-        else b.classList.remove('active');
-      });
-
-      // Підсвічуємо кількість перерв
-      const btnSteps4 = document.getElementById('btn-steps-4');
-      const btnSteps6 = document.getElementById('btn-steps-6');
-      if (btnSteps4 && btnSteps6) {
-        if (gameState.stepsCount === 6) {
-          btnSteps6.classList.add('active');
-          btnSteps4.classList.remove('active');
-        } else {
-          btnSteps4.classList.add('active');
-          btnSteps6.classList.remove('active');
-        }
+      // Оновлюємо картку прив'язаної команди
+      const badge = document.getElementById('settings-team-bound-badge');
+      if (badge) {
+        badge.textContent = `Слідча Команда №${gameState.team}`;
       }
 
-      this.updateRouteFormulaHint();
+      const desc = document.getElementById('settings-team-bound-desc');
+      if (desc) {
+        const route = getActiveRouteList();
+        desc.textContent = `Маршрут цієї команди: [${route.map(id => LOCATIONS[id].name).join(' ➔ ')} ➔ Штаб]`;
+      }
+
       this.modalSettings.classList.add('active');
     },
 
@@ -2229,63 +2923,33 @@
       this.modalSettings.classList.remove('active');
     },
 
-    updateRouteFormulaHint() {
-      const formulaEl = document.getElementById('settings-route-formula');
-      if (formulaEl) {
-        const route = getActiveRouteList();
-        formulaEl.textContent = `Маршрут команди №${gameState.team}: [${route.join(' ➔ ')} ➔ Фінал]`;
-      }
-    },
-
-    changeTeam(teamNum) {
-      if (teamNum < 1 || teamNum > 6) return;
-      gameState.team = teamNum;
-      // Якщо поточний індекс за межами або зміна команди — зберігаємо
-      saveState();
-      this.updateSettingsUI();
-      this.updateProgressIndicator();
-      this.renderFullChatStory();
-      this.renderDossierBoard();
-    },
-
-    changeStepsCount(count) {
-      gameState.stepsCount = count === 6 ? 6 : 4;
-      saveState();
-      this.updateSettingsUI();
-      this.updateProgressIndicator();
-      this.renderFullChatStory();
-      this.renderDossierBoard();
-    },
-
     updateSettingsUI() {
-      const teamBtns = document.querySelectorAll('.team-select-btn');
-      teamBtns.forEach(b => {
-        if (parseInt(b.dataset.team, 10) === gameState.team) b.classList.add('active');
-        else b.classList.remove('active');
-      });
-
-      const btnSteps4 = document.getElementById('btn-steps-4');
-      const btnSteps6 = document.getElementById('btn-steps-6');
-      if (btnSteps4 && btnSteps6) {
-        if (gameState.stepsCount === 6) {
-          btnSteps6.classList.add('active');
-          btnSteps4.classList.remove('active');
-        } else {
-          btnSteps4.classList.add('active');
-          btnSteps6.classList.remove('active');
-        }
+      const badge = document.getElementById('settings-team-bound-badge');
+      if (badge) {
+        badge.textContent = `Слідча Команда №${gameState.team}`;
       }
-      this.updateRouteFormulaHint();
+      const desc = document.getElementById('settings-team-bound-desc');
+      if (desc) {
+        const route = getActiveRouteList();
+        desc.textContent = `Маршрут цієї команди: [${route.map(id => LOCATIONS[id].name).join(' ➔ ')} ➔ Штаб]`;
+      }
     },
 
     resetAllProgress() {
-      gameState = Object.assign({}, defaultState, { team: gameState.team, stepsCount: gameState.stepsCount });
+      AudioController.stopVoice();
+      gameState = Object.assign({}, defaultState, {
+        team: gameState.team,
+        stepsCount: 6,
+        musicEnabled: true,
+        hasStarted: false
+      });
       saveState();
       this.closeSettingsModal();
       this.updateProgressIndicator();
       this.renderFullChatStory();
       this.renderDossierBoard();
-      alert('Прогрес успішно скинуто! Справу розпочато заново.');
+      this.initStartSplash();
+      alert('Прогрес на цьому телефоні успішно скинуто! Розслідування розпочато заново.');
     },
 
     // ========================================================================
@@ -2321,7 +2985,7 @@
     checkUrlParameters() {
       const params = new URLSearchParams(window.location.search);
 
-      // Параметр ?team=1..6
+      // Параметр ?team=1..6 (прив'язка телефону через QR-перепустку)
       if (params.has('team')) {
         const t = parseInt(params.get('team'), 10);
         if (t >= 1 && t <= 6) {
@@ -2330,7 +2994,11 @@
             saveState();
             this.updateProgressIndicator();
             this.renderFullChatStory();
+            this.renderDossierBoard();
           }
+        }
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, document.title, window.location.pathname);
         }
       }
 
@@ -2343,7 +3011,64 @@
             this.submitPin();
           }, 350);
         }
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
       }
+    },
+
+    // Обробка відсканованого QR-коду (URL, unlock, team або прямий PIN)
+    processScannedCode(rawText) {
+      const clean = (rawText || '').trim();
+      if (!clean) return;
+
+      // 1. Спроба розбору як URL
+      try {
+        const parsedUrl = new URL(clean, window.location.href);
+        if (parsedUrl.searchParams.has('unlock')) {
+          const code = parsedUrl.searchParams.get('unlock').trim();
+          this.enteredPin = code;
+          this.submitPin();
+          return;
+        }
+        if (parsedUrl.searchParams.has('team')) {
+          const t = parseInt(parsedUrl.searchParams.get('team'), 10);
+          if (t >= 1 && t <= 6) {
+            this.changeTeam(t);
+            alert(`Успішно! Цей телефон прив'язано до Команди №${t}.`);
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // 2. Регулярний вираз на unlock=XXXX
+      const unlockMatch = clean.match(/unlock=([0-9]{4})/i);
+      if (unlockMatch) {
+        this.enteredPin = unlockMatch[1];
+        this.submitPin();
+        return;
+      }
+
+      // 3. Регулярний вираз на team=X
+      const teamMatch = clean.match(/team[:=]([1-6])/i);
+      if (teamMatch) {
+        const t = parseInt(teamMatch[1], 10);
+        this.changeTeam(t);
+        alert(`Успішно! Цей телефон прив'язано до Команди №${t}.`);
+        return;
+      }
+
+      // 4. Прямий 4-значний PIN-код локації (2041..7946, 1616)
+      const pinMatch = clean.match(/\b([0-9]{4})\b/);
+      if (pinMatch) {
+        this.enteredPin = pinMatch[1];
+        this.submitPin();
+        return;
+      }
+
+      // Якщо код не розпізнано
+      AudioManager.playChime('error');
+      alert(`Відскановано невідомий код: "${clean}". Перевірте, чи це QR-код станції квесту.`);
     },
 
     scrollToBottom() {
@@ -2367,6 +3092,7 @@
   // Запуск додатка після завантаження DOM
   document.addEventListener('DOMContentLoaded', () => {
     AudioManager.init();
+    QRScannerManager.init();
     UI.init();
   });
 

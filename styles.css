@@ -91,39 +91,44 @@ html, body {
    ВЕРХНЯ ПАНЕЛЬ (HEADER)
    ========================================================================== */
 .app-header {
-  height: var(--header-height);
-  background-color: rgba(30, 41, 59, 0.95);
+  height: 58px;
+  min-height: 58px;
+  background-color: rgba(30, 41, 59, 0.98);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
+  padding: 0 10px;
   border-bottom: 1px solid var(--border-subtle);
   position: sticky;
   top: 0;
   z-index: 40;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
   flex: 1;
+  overflow: hidden;
 }
 
 .avatar-stack {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .stack-avatar {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  border: 2px solid var(--bg-surface);
-  margin-left: -8px;
+  border: 1.5px solid var(--bg-surface);
+  margin-left: -9px;
   background-color: var(--bg-surface-elevated);
   overflow: hidden;
   flex-shrink: 0;
@@ -140,31 +145,52 @@ html, body {
 
 .header-titles {
   min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .chat-title {
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: -0.2px;
+  line-height: 1.25;
+  margin: 0;
 }
 
 .chat-subtitle {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 5px;
+  font-size: 11px;
+  line-height: 1.2;
   color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+#header-status-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 100%;
 }
 
 .status-indicator {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background-color: var(--accent-emerald);
+  flex-shrink: 0;
 }
 .status-indicator.offline {
   background-color: var(--accent-rose);
@@ -179,16 +205,17 @@ html, body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   flex-shrink: 0;
+  margin-left: 6px;
 }
 
 .btn-icon {
   background: transparent;
   border: none;
   color: var(--text-secondary);
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
@@ -196,6 +223,7 @@ html, body {
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 .btn-icon:hover, .btn-icon:active {
   background-color: rgba(255, 255, 255, 0.08);
@@ -205,16 +233,17 @@ html, body {
 .badge-evidence {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
+  gap: 3px;
+  padding: 3px 6px;
   background-color: var(--accent-amber-bg);
   border: 1px solid rgba(217, 119, 6, 0.4);
   color: var(--accent-amber-light);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 .badge-evidence:active {
   transform: scale(0.96);
@@ -1472,13 +1501,17 @@ html, body {
   flex-direction: column;
   gap: 6px;
   position: relative;
+  transition: all 0.2s ease;
 }
 .dossier-loc-card.unlocked {
   border-color: rgba(5, 150, 105, 0.5);
-  background-color: rgba(30, 41, 59, 0.9);
+  background-color: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
 }
 .dossier-loc-card.locked {
-  opacity: 0.6;
+  background-color: rgba(15, 23, 42, 0.7);
+  border: 1px dashed #475569;
+  opacity: 0.85;
 }
 
 .dossier-loc-top {
@@ -1491,23 +1524,81 @@ html, body {
   font-weight: 700;
   color: #fff;
 }
+.dossier-loc-card.locked .dossier-loc-name {
+  color: #94a3b8;
+  font-style: italic;
+}
+
 .dossier-loc-tag {
   font-size: 10px;
   font-weight: 700;
   padding: 2px 6px;
   border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 .tag-done { background: var(--accent-emerald-bg); color: #34d399; }
 .tag-pending { background: var(--accent-amber-bg); color: #fbbf24; }
-.tag-locked { background: rgba(255, 255, 255, 0.08); color: #94a3b8; }
+.tag-locked { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 
 .dossier-loc-insight {
   font-size: 12px;
   color: #cbd5e1;
   line-height: 1.4;
   background-color: rgba(15, 23, 42, 0.4);
-  padding: 6px 8px;
+  padding: 8px 10px;
   border-radius: 4px;
+  border-left: 3px solid var(--accent-emerald);
+}
+
+/* Засекречений блок станції до її розкриття */
+.dossier-classified-box {
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.45);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 2px;
+  overflow: hidden;
+  border: 1px dashed rgba(239, 68, 68, 0.3);
+}
+
+.dossier-classified-stamp {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: 2px solid #ef4444;
+  color: #ef4444;
+  font-size: 10.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  transform: rotate(5deg);
+  letter-spacing: 1px;
+  background-color: rgba(239, 68, 68, 0.12);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.25);
+  z-index: 2;
+  user-select: none;
+}
+
+.dossier-classified-blur {
+  filter: blur(4.5px);
+  color: #64748b;
+  font-size: 11.5px;
+  line-height: 1.4;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.dossier-classified-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 6px;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 /* Досьє персонажів */
@@ -1672,6 +1763,115 @@ html, body {
   max-height: 85vh;
   animation: slideUp 0.25s ease-out;
 }
+.modal-sheet.qr-sheet {
+  max-height: 90vh;
+}
+
+/* ==========================================================================
+   ВБУДОВАНИЙ СКАНЕР QR-КОДУ (ОПТИМІЗОВАНА КАМЕРА)
+   ========================================================================== */
+.qr-modal-body {
+  padding: 14px 18px 20px 18px;
+}
+
+.qr-camera-container {
+  position: relative;
+  width: 100%;
+  max-width: 290px;
+  height: 290px;
+  margin: 0 auto 12px auto;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: #000;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid #334155;
+}
+
+.qr-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.qr-reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 190px;
+  height: 190px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.qr-corner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-color: var(--accent-amber-light);
+  border-style: solid;
+}
+.qr-corner.tl { top: 0; left: 0; border-width: 4px 0 0 4px; border-top-left-radius: 4px; }
+.qr-corner.tr { top: 0; right: 0; border-width: 4px 4px 0 0; border-top-right-radius: 4px; }
+.qr-corner.bl { bottom: 0; left: 0; border-width: 0 0 4px 4px; border-bottom-left-radius: 4px; }
+.qr-corner.br { bottom: 0; right: 0; border-width: 0 4px 4px 0; border-bottom-right-radius: 4px; }
+
+.qr-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent-amber-light), #fff, var(--accent-amber-light), transparent);
+  box-shadow: 0 0 10px var(--accent-amber-light);
+  animation: scanLaser 2s infinite ease-in-out;
+}
+
+@keyframes scanLaser {
+  0%, 100% { top: 8%; opacity: 0.4; }
+  50% { top: 92%; opacity: 1; }
+}
+
+.qr-status-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  color: #cbd5e1;
+  font-size: 13px;
+  gap: 12px;
+  z-index: 10;
+  transition: opacity 0.2s ease;
+}
+.qr-status-overlay.hidden {
+  display: none;
+}
+
+.qr-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--accent-amber-light);
+  border-radius: 50%;
+  animation: spinLoader 0.8s infinite linear;
+}
+
+@keyframes spinLoader {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.qr-actions-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
 
 @keyframes slideUp {
   from { transform: translateY(100%); }
@@ -1799,7 +1999,7 @@ html, body {
   margin-top: 10px;
 }
 
-/* Налаштування організатора */
+/* Налаштування квесту */
 .settings-body {
   display: flex;
   flex-direction: column;
@@ -1816,31 +2016,44 @@ html, body {
   color: #cbd5e1;
 }
 
-.team-buttons-row {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 6px;
-}
-.team-select-btn {
-  height: 40px;
+/* Картка прив'язки команди */
+.team-bound-card {
   background-color: #0f172a;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
 }
-.team-select-btn.active {
+.team-bound-badge {
+  display: inline-block;
   background-color: var(--accent-amber);
-  border-color: var(--accent-amber);
   color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+.team-bound-desc {
+  font-size: 12.5px;
+  color: #cbd5e1;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+}
+.team-qr-note {
+  font-size: 11px;
+  color: #94a3b8;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 6px 8px;
+  border-radius: 4px;
+  border-left: 2px solid var(--accent-amber);
+  line-height: 1.4;
 }
 
 .setting-hint {
   font-size: 12px;
   color: #94a3b8;
-  font-family: var(--font-mono);
 }
 
 .steps-selector-row {
@@ -1857,6 +2070,8 @@ html, body {
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
 }
 .steps-select-btn.active {
   background-color: rgba(59, 130, 246, 0.2);
@@ -1864,36 +2079,24 @@ html, body {
   color: #60a5fa;
 }
 
-.qr-helper-table {
+.rules-info-box {
   background-color: #0f172a;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 8px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.qr-helper-row {
-  display: flex;
-  justify-content: space-between;
+  padding: 10px 12px;
   font-size: 12px;
-  color: #94a3b8;
+  line-height: 1.5;
+  color: #cbd5e1;
 }
-.qr-helper-row code {
-  color: #fbbf24;
-  font-family: var(--font-mono);
-  font-weight: 700;
+.rules-info-box p {
+  margin-bottom: 4px;
 }
-.qr-helper-row.highlight {
-  color: #a7f3d0;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
-  padding-top: 4px;
-  margin-top: 2px;
+.rules-info-box p:last-child {
+  margin-bottom: 0;
 }
-.qr-helper-row.highlight code { color: #34d399; }
 
 .danger-zone {
-  margin-top: 10px;
+  margin-top: 6px;
   padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -1902,13 +2105,14 @@ html, body {
   background-color: rgba(225, 29, 72, 0.15);
   border: 1px solid var(--accent-rose);
   color: #fda4af;
-  padding: 10px;
+  padding: 11px;
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
-.btn-danger:hover {
+.btn-danger:hover, .btn-danger:active {
   background-color: var(--accent-rose);
   color: #fff;
 }
@@ -2120,4 +2324,352 @@ html, body {
     margin: 0;
     padding: 0;
   }
+}
+
+/* ==========================================================================
+   ДЕТЕКТИВНИЙ АУДІО-ДУЕТ: ХРОНІКЕР ТА НАДІЯ + СТАРТОВА ЗАСТАВКА
+   ========================================================================== */
+
+/* Стартова заставка */
+.start-splash-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(circle at 50% 25%, #1e293b 0%, #090d16 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+.start-splash-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.start-splash-card {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(217, 119, 6, 0.4);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(217, 119, 6, 0.15);
+  max-width: 420px;
+  width: 100%;
+  animation: fadeInMsg 0.4s ease-out;
+}
+.splash-badge {
+  display: inline-block;
+  background: rgba(217, 119, 6, 0.15);
+  color: #fbbf24;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(217, 119, 6, 0.35);
+  margin-bottom: 14px;
+  letter-spacing: 0.5px;
+}
+.splash-easel-icon {
+  margin: 0 auto 12px auto;
+  display: flex;
+  justify-content: center;
+}
+.splash-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fffbeb;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+.splash-subtitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-amber);
+  margin-bottom: 12px;
+}
+.splash-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #cbd5e1;
+  margin-bottom: 16px;
+}
+.splash-team-info {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 18px;
+}
+.splash-team-info strong {
+  color: #38bdf8;
+  font-weight: 700;
+}
+.btn-start-investigation {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.3px;
+}
+.btn-start-investigation:hover {
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.6);
+}
+.btn-start-investigation:active {
+  transform: scale(0.97);
+}
+
+/* Аудіо-картки двох голосів */
+.audio-player-card {
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin: 10px 0;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* 1. Хронікер розслідування (Євгеній Шевченко) */
+.audio-card-narrator {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border: 1px solid rgba(217, 119, 6, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.audio-card-narrator.is-playing {
+  border-color: rgba(245, 158, 11, 0.8);
+  box-shadow: 0 0 16px rgba(217, 119, 6, 0.3);
+}
+
+/* 2. Головна героїня Надія Кравчук */
+.audio-card-nadiia {
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.08) 0%, rgba(6, 78, 59, 0.18) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15);
+}
+.audio-card-nadiia.is-playing {
+  border-color: rgba(52, 211, 153, 0.8);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.3);
+}
+
+/* 3. Служба медіації */
+.audio-card-mediator {
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+}
+.audio-card-mediator.is-playing {
+  border-color: rgba(129, 140, 248, 0.8);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.3);
+}
+
+/* Шапка аудіокартки */
+.audio-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+.audio-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.3px;
+}
+.narrator-badge {
+  color: #fbbf24;
+  background: rgba(217, 119, 6, 0.18);
+  border: 1px solid rgba(217, 119, 6, 0.35);
+}
+.nadiia-badge {
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.mediator-badge {
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+}
+.nadiia-mini-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nadiia-mini-avatar svg {
+  width: 100%;
+  height: 100%;
+}
+.audio-card-speaker-role {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+.audio-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 8px;
+}
+
+/* Тіло плеєра */
+.audio-player-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.btn-audio-play {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-audio-play:active {
+  transform: scale(0.92);
+}
+.btn-audio-play.narrator {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.4);
+}
+.btn-audio-play.narrator.playing {
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+}
+.btn-audio-play.nadiia {
+  background: linear-gradient(135deg, #059669, #047857);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+}
+.btn-audio-play.nadiia.playing {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+.btn-audio-play.mediator {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
+}
+
+/* Звукова хвиля */
+.audio-waveform-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.audio-waveform-svg {
+  width: 100%;
+  height: 26px;
+}
+.audio-bar {
+  fill: #475569;
+  transition: fill 0.2s ease;
+  transform-origin: center;
+}
+.audio-card-narrator.is-playing .audio-bar {
+  fill: #fbbf24;
+  animation: audioWaveBounce 1.1s infinite ease-in-out;
+}
+.audio-card-nadiia.is-playing .audio-bar {
+  fill: #34d399;
+  animation: audioWaveBounce 1.1s infinite ease-in-out;
+}
+.audio-card-mediator.is-playing .audio-bar {
+  fill: #818cf8;
+  animation: audioWaveBounce 1.1s infinite ease-in-out;
+}
+.audio-player-card.is-playing .audio-bar:nth-child(2n) { animation-delay: 0.15s; }
+.audio-player-card.is-playing .audio-bar:nth-child(3n) { animation-delay: 0.3s; }
+.audio-player-card.is-playing .audio-bar:nth-child(4n) { animation-delay: 0.45s; }
+
+@keyframes audioWaveBounce {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1.35); }
+}
+
+.audio-progress-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94a3b8;
+  font-family: var(--font-mono);
+}
+
+/* Текстова розшифровка */
+.audio-transcript-toggle {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.btn-audio-transcript {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 4px 0;
+  transition: opacity 0.15s ease;
+}
+.audio-card-narrator .btn-audio-transcript {
+  color: #fde68a;
+}
+.audio-card-nadiia .btn-audio-transcript {
+  color: #a7f3d0;
+}
+.audio-card-mediator .btn-audio-transcript {
+  color: #c7d2fe;
+}
+.btn-audio-transcript:hover {
+  opacity: 0.85;
+}
+.audio-transcript-content {
+  display: none;
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1.5;
+  color: #e2e8f0;
+  border-left: 3px solid var(--accent-amber);
+}
+.audio-card-nadiia .audio-transcript-content {
+  border-left-color: var(--accent-emerald);
+}
+.audio-card-mediator .audio-transcript-content {
+  border-left-color: #6366f1;
+}
+.audio-transcript-content.open {
+  display: block;
+  animation: fadeInMsg 0.25s ease-out;
 }

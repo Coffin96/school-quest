@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Справа про порожній мольберт: Голос Надії</title>
+  <meta name="description" content="Шкільний інтерактивний детективний квест до акції «16 днів проти насильства» для учнів 5–9 класів">
+  <meta name="theme-color" content="#1e293b">
+  
+  <!-- Favicon SVG -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e293b'/><circle cx='50' cy='50' r='34' fill='%23d97706'/><path d='M38 32 L62 32 L58 64 L42 64 Z' fill='%23fffbeb'/><circle cx='50' cy='46' r='6' fill='%23059669'/></svg>">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- App Container (Max-width 480px, Mobile-First) -->
+  <div id="app" class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="avatar-stack" id="header-avatar-stack" title="Учасники оргкомітету">
+          <!-- Populated by JS -->
+        </div>
+        <div class="header-titles">
+          <h1 class="chat-title">Оргкомітет виставки</h1>
+          <div class="chat-subtitle">
+            <span class="status-indicator offline"></span>
+            <span id="header-status-text">Надія вийшла з чату</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Background Music Toggle -->
+        <button id="btn-bgm" class="btn-icon" aria-label="Перемкнути музику" title="Фонова музика">
+          <svg class="icon-svg" viewBox="0 0 24 24" width="20" height="20">
+            <path id="bgm-icon-path" fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+          <span class="music-wave" id="bgm-wave">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+
+        <!-- Clue / Evidence Counter -->
+        <button id="btn-evidence-badge" class="badge-evidence" title="Зібрані докази">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span id="clues-progress-text">0/4</span>
+        </button>
+
+        <!-- Dossier Toggle -->
+        <button id="btn-toggle-dossier" class="btn-icon" aria-label="Дошка розслідування" title="Дошка розслідування">
+          <svg class="icon-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="9" y1="21" x2="9" y2="9"></line>
+          </svg>
+          <span class="unread-dot" id="dossier-unread-dot" style="display: none;"></span>
+        </button>
+
+        <!-- Settings Modal Toggle -->
+        <button id="btn-open-settings" class="btn-icon" aria-label="Налаштування" title="Налаштування організатора">
+          <svg class="icon-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sub-header Alert Banner -->
+    <div class="team-route-banner" id="team-route-banner">
+      <span class="team-tag" id="team-badge-text">Команда №1</span>
+      <span class="route-hint" id="team-route-hint">Локація: Завантаження...</span>
+    </div>
+
+    <!-- MAIN VIEW 1: CHAT VIEW -->
+    <main id="chat-view" class="view-panel active">
+      <!-- Chat message stream -->
+      <div id="chat-stream" class="chat-stream" role="log" aria-live="polite">
+        <!-- Messages rendered by app.js -->
+      </div>
+
+      <!-- Quick Action Floating Bar -->
+      <footer class="chat-action-bar" id="chat-action-bar">
+        <button id="btn-enter-code-bar" class="action-btn primary" title="Ввести 4-значний код вчителя">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>Ввести код вчителя</span>
+        </button>
+
+        <button id="btn-quick-clue" class="action-btn secondary" title="Показати поточну наводку">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>Зачіпка</span>
+        </button>
+
+        <button id="btn-quick-dossier" class="action-btn secondary" title="Перейти до Дошки розслідування">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Досьє</span>
+        </button>
+      </footer>
+    </main>
+
+    <!-- MAIN VIEW 2: INVESTIGATION BOARD (DOSSIER) -->
+    <section id="dossier-view" class="view-panel" aria-label="Дошка розслідування">
+      <div class="dossier-header">
+        <button id="btn-back-to-chat" class="btn-icon" aria-label="Назад до чату">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="dossier-title-box">
+          <h2 class="dossier-title">Дошка розслідування</h2>
+          <span class="dossier-subtitle">Матеріали справи та психологічний аналіз</span>
+        </div>
+      </div>
+
+      <div class="dossier-content">
+        <!-- Corkboard / Case Pins -->
+        <div class="case-file-card">
+          <div class="case-file-badge">СПРАВА № 16-НД</div>
+          <h3 class="case-file-heading">«Справа про порожній мольберт: Голос Надії»</h3>
+          <p class="case-file-desc">
+            Розслідування раптового зникнення експонатів шкільної виставки та виходу головної художниці з чату оргкомітету. Завдання слідчих команд — відновити ланцюжок подій і встановити справжні причини.
+          </p>
+          <div class="case-file-stats">
+            <div class="stat-item">
+              <span class="stat-label">Прогрес доказів:</span>
+              <strong class="stat-value" id="dossier-stat-progress">0 з 4</strong>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Статус справи:</span>
+              <span class="status-pill active" id="dossier-case-status">Триває слідство</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Investigation Grid: 6 Locations Dossier Cards -->
+        <h4 class="section-heading">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          Картка станцій та свідчень вчителів
+        </h4>
+        <div class="locations-dossier-grid" id="locations-dossier-grid">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Character Dossiers Section -->
+        <h4 class="section-heading">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Досьє персонажів та динаміка взаємин
+        </h4>
+        <div class="characters-grid" id="characters-dossier-grid">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Audio Evidence Archives -->
+        <h4 class="section-heading">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Аудіозаписи чернеток Надії
+        </h4>
+        <div class="voice-archives-list" id="voice-archives-list">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Support Hotline Banner (16 Days) -->
+        <div class="hotline-card">
+          <div class="hotline-icon">🛡️</div>
+          <div class="hotline-body">
+            <strong>Корисні контакти підтримки:</strong>
+            <p>Національна дитяча гаряча лінія: <strong>116 111</strong> або <strong>0 800 500 225</strong> (безкоштовно та анонімно)</p>
+            <p>Урядова лінія з протидії насильству: <strong>1547</strong></p>
+            <p>Кабінет шкільного психолога та медіатора відкритий для кожного учня.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL 1: TEACHER CODE INPUT (4 DIGITS) -->
+    <div id="modal-code" class="modal-backdrop" aria-hidden="true">
+      <div class="modal-sheet" role="dialog" aria-labelledby="modal-code-title">
+        <div class="sheet-handle"></div>
+        <div class="modal-header">
+          <h3 id="modal-code-title" class="modal-title">Ввести код вчителя</h3>
+          <button class="btn-close-modal" id="btn-close-code-modal" aria-label="Закрити">&times;</button>
+        </div>
+
+        <div class="modal-body text-center">
+          <p class="modal-intro" id="code-modal-intro">
+            Введіть 4-значний код зі звороту картки свідка або перепустки локації:
+          </p>
+
+          <!-- 4-Digit Display -->
+          <div class="pin-display" id="pin-display">
+            <span class="pin-digit" data-idx="0"></span>
+            <span class="pin-digit" data-idx="1"></span>
+            <span class="pin-digit" data-idx="2"></span>
+            <span class="pin-digit" data-idx="3"></span>
+          </div>
+
+          <div class="pin-feedback" id="pin-feedback"></div>
+
+          <!-- Numeric Keypad -->
+          <div class="numpad-grid">
+            <button class="num-key" data-num="1">1</button>
+            <button class="num-key" data-num="2">2</button>
+            <button class="num-key" data-num="3">3</button>
+            <button class="num-key" data-num="4">4</button>
+            <button class="num-key" data-num="5">5</button>
+            <button class="num-key" data-num="6">6</button>
+            <button class="num-key" data-num="7">7</button>
+            <button class="num-key" data-num="8">8</button>
+            <button class="num-key" data-num="9">9</button>
+            <button class="num-key key-clear" id="key-clear" title="Стерти">⌫</button>
+            <button class="num-key" data-num="0">0</button>
+            <button class="num-key key-submit" id="key-submit" title="Підтвердити">➔</button>
+          </div>
+
+          <div class="modal-footnote">
+            Підказка: якщо ви відсканували QR-код камерою смартфона, код вводиться автоматично.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: ORGANIZER SETTINGS -->
+    <div id="modal-settings" class="modal-backdrop" aria-hidden="true">
+      <div class="modal-sheet" role="dialog" aria-labelledby="modal-settings-title">
+        <div class="sheet-handle"></div>
+        <div class="modal-header">
+          <h3 id="modal-settings-title" class="modal-title">Панель організатора</h3>
+          <button class="btn-close-modal" id="btn-close-settings-modal" aria-label="Закрити">&times;</button>
+        </div>
+
+        <div class="modal-body settings-body">
+          <!-- Team Selection -->
+          <div class="setting-group">
+            <label class="setting-label">Номер команди учнів:</label>
+            <div class="team-buttons-row" id="settings-team-selector">
+              <button class="team-select-btn" data-team="1">1</button>
+              <button class="team-select-btn" data-team="2">2</button>
+              <button class="team-select-btn" data-team="3">3</button>
+              <button class="team-select-btn" data-team="4">4</button>
+              <button class="team-select-btn" data-team="5">5</button>
+              <button class="team-select-btn" data-team="6">6</button>
+            </div>
+            <p class="setting-hint" id="settings-route-formula">Маршрут команди: [1 ➔ 2 ➔ 3 ➔ 4 ➔ Фінал]</p>
+          </div>
+
+          <!-- Route Length -->
+          <div class="setting-group">
+            <label class="setting-label">Формат квесту (кількість перерв):</label>
+            <div class="steps-selector-row">
+              <button class="steps-select-btn active" id="btn-steps-4" data-steps="4">
+                4 перерви (Стандарт)
+              </button>
+              <button class="steps-select-btn" id="btn-steps-6" data-steps="6">
+                6 перерв (Повний день)
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Test / Direct Code Helper -->
+          <div class="setting-group">
+            <label class="setting-label">Швидкі посилання та QR-коди вчителів:</label>
+            <div class="qr-helper-table">
+              <div class="qr-helper-row">
+                <span>Каб. інформатики:</span> <code>2041</code>
+              </div>
+              <div class="qr-helper-row">
+                <span>Каб. математики:</span> <code>3182</code>
+              </div>
+              <div class="qr-helper-row">
+                <span>Каб. фізики/хімії:</span> <code>4593</code>
+              </div>
+              <div class="qr-helper-row">
+                <span>Каб. укр. мови:</span> <code>5724</code>
+              </div>
+              <div class="qr-helper-row">
+                <span>Каб. історії:</span> <code>6835</code>
+              </div>
+              <div class="qr-helper-row">
+                <span>Каб. біології:</span> <code>7946</code>
+              </div>
+              <div class="qr-helper-row highlight">
+                <span>Фінальний Штаб:</span> <code>1616</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reset Progress -->
+          <div class="setting-group danger-zone">
+            <button id="btn-reset-progress" class="btn-danger">
+              Скинути прогрес та розпочати заново
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 3: CERTIFICATE VIEW / PRINT -->
+    <div id="modal-certificate" class="modal-backdrop fullscreen" aria-hidden="true">
+      <div class="certificate-container">
+        <div class="certificate-topbar">
+          <button id="btn-close-certificate" class="btn-secondary">Повернутися до гри</button>
+          <button id="btn-print-certificate" class="btn-primary">🖨️ Роздрукувати / Зберегти PDF</button>
+        </div>
+        
+        <div class="certificate-paper" id="certificate-printable">
+          <div class="cert-border">
+            <div class="cert-inner-border">
+              <div class="cert-header">
+                <div class="cert-emblem">
+                  <!-- SVG Emblem -->
+                  <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="46" fill="#fffbeb" stroke="#d97706" stroke-width="4"/>
+                    <circle cx="50" cy="50" r="38" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="4,2"/>
+                    <path d="M50 18 L58 35 L76 35 L62 46 L68 64 L50 52 L32 64 L38 46 L24 35 L42 35 Z" fill="#d97706"/>
+                    <circle cx="50" cy="50" r="14" fill="#059669"/>
+                    <path d="M45 50 L49 54 L56 46" fill="none" stroke="#fffbeb" stroke-width="3" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="cert-titles">
+                  <span class="cert-sup">ШКІЛЬНА АКЦІЯ «16 ДНІВ ПРОТИ НАСИЛЬСТВА»</span>
+                  <h2 class="cert-main-title">СЕРТИФІКАТ</h2>
+                  <span class="cert-sub-title">КОМІСІЇ ПРИМИРЕННЯ ТА ВЗАЄМОПОВАГИ</span>
+                </div>
+              </div>
+
+              <div class="cert-body">
+                <p class="cert-intro">Цим документом засвідчується, що</p>
+                <div class="cert-team-name" id="cert-team-display">Слідча Команда №1</div>
+                <p class="cert-text">
+                  успішно розслідувала <strong>«Справу про порожній мольберт: Голос Надії»</strong>, розпізнала прояви прихованого булінгу, газлайтингу та психологічного тиску, довела важливість активної позиції небайдужих свідків та заклала основи безпечного простору класу.
+                </p>
+
+                <div class="cert-charter-box">
+                  <h4 class="cert-charter-title">Прийнята Хартія безпечного класу:</h4>
+                  <ul class="cert-charter-list" id="cert-charter-list">
+                    <!-- Populated by JS -->
+                  </ul>
+                </div>
+              </div>
+
+              <div class="cert-footer">
+                <div class="cert-sign-col">
+                  <div class="cert-line"></div>
+                  <span>Координатор медіації</span>
+                </div>
+                <div class="cert-seal-col">
+                  <div class="cert-seal">
+                    <span>ПРИМИРЕННЯ</span>
+                    <span class="seal-year">2026</span>
+                    <span>16 ДНІВ</span>
+                  </div>
+                </div>
+                <div class="cert-sign-col">
+                  <div class="cert-line"></div>
+                  <span id="cert-date-display">09.11.2026</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden audio elements -->
+    <audio id="audio-bgm" loop preload="auto">
+      <source src="assets/audio/bg_detective_theme.mp3" type="audio/mpeg">
+      <source src="bg_detective_theme.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="audio-voice" preload="auto">
+      <!-- Sources swapped dynamically by JS -->
+    </audio>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

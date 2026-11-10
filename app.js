@@ -224,80 +224,145 @@
   };
 
   // ==========================================================================
-  // 0.1 КАРТА СЮЖЕТНИХ ЗОБРАЖЕНЬ (STORY_IMAGES) - GRACEFUL FALLBACK
+  // 0.1 КАРТА ЗОБРАЖЕНЬ: ГАЛЕРЕЯ ДОКАЗІВ (EVIDENCE_GALLERY) ТА FALLBACK SVG
   // ==========================================================================
-  const STORY_IMAGES = {
-    easel_empty: {
-      key: 'easel_empty',
-      src: 'assets/images/episodes/easel_empty.jpg',
-      alt: 'Порожній мольберт у шкільному фойє',
-      caption: '🎨 Доказ №0: Порожній мольберт Надії перед виставкою',
-      author: 'Шкільне фойє • 08:14'
+  const EVIDENCE_GALLERY = [
+    {
+      id: 'start',
+      file: 'assets/images/evidence_start.jpg',
+      title: 'Доказ №0: Порожній мольберт о 08:15',
+      caption: 'Залишена робоча папка Надії та порожні стенди у шкільному холі перед першим уроком.',
+      stationId: 0,
+      unlockedByDefault: true,
+      tag: 'Шкільний хол • 08:15',
+      alt: 'Порожній мольберт у шкільному холі перед виставкою'
     },
-    notebook_notes: {
-      key: 'notebook_notes',
-      src: 'assets/images/episodes/notebook_notes.jpg',
-      alt: 'Робочий блокнот Надії зі скетчами',
-      caption: '📖 Знайдений на підвіконні блокнот із чернетками',
-      author: 'Знахідка Софії'
+    {
+      id: 'station_1',
+      file: 'assets/images/evidence_station_1.jpg',
+      title: 'Доказ №1: Камера без дозволу (Інформатика)',
+      caption: 'Знімок чорнового ескізу з плямою фарби, який перетворили на мем попри прохання Надії.',
+      stationId: 1,
+      unlockedByDefault: false,
+      tag: 'Кабінет №12 • Інформатика',
+      alt: 'Кабінет інформатики • Камера без дозволу'
     },
-    station_1: {
-      key: 'station_1',
-      src: 'assets/images/clues/station_1_inf.jpg',
-      alt: 'Кабінет інформатики',
-      caption: '📍 Локація 1: Комп’ютерний клас (мем та груповий чат)',
-      author: 'Кабінет №12'
+    {
+      id: 'station_2',
+      file: 'assets/images/evidence_station_2.jpg',
+      title: 'Доказ №2: Зім\'ятий план (Математика)',
+      caption: 'Відкинуті пропозиції Надії після фрази Максима "Тобі все здається" (газлайтинг).',
+      stationId: 2,
+      unlockedByDefault: false,
+      tag: 'Кабінет №24 • Математика',
+      alt: 'Кабінет математики • Зім\'ятий план'
     },
-    station_2: {
-      key: 'station_2',
-      src: 'assets/images/clues/station_2_math.jpg',
-      alt: 'Кабінет математики',
-      caption: '📍 Локація 2: Кабінет математики (перекладання роботи)',
-      author: 'Кабінет №24'
+    {
+      id: 'station_3',
+      file: 'assets/images/evidence_station_3.jpg',
+      title: 'Доказ №3: Кошторис і конверт (Фізика/Хімія)',
+      caption: 'Спроба змусити Надію оплатити всі матеріали виставки за подарункові кошти під приводом "перевірки на дружбу".',
+      stationId: 3,
+      unlockedByDefault: false,
+      tag: 'Кабінет №31 • Фізика та хімія',
+      alt: 'Лабораторія • Кошторис і конверт'
     },
-    station_3: {
-      key: 'station_3',
-      src: 'assets/images/clues/station_3_science.jpg',
-      alt: 'Лабораторія фізики та хімії',
-      caption: '📍 Локація 3: Лабораторія (сарказм та токсичний гумор)',
-      author: 'Кабінет №31'
+    {
+      id: 'station_4',
+      file: 'assets/images/evidence_station_4.jpg',
+      title: 'Доказ №4: Мовчазний екран (Література)',
+      caption: 'Ненадіслана підтримка: коли свідки бачать несправедливість, але мовчать через страх.',
+      stationId: 4,
+      unlockedByDefault: false,
+      tag: 'Кабінет №18 • Література',
+      alt: 'Кабінет літератури • Мовчазний екран'
     },
-    station_4: {
-      key: 'station_4',
-      src: 'assets/images/clues/station_4_lit.jpg',
-      alt: 'Кабінет літератури',
-      caption: '📍 Локація 4: Кабінет літератури (ігнорування та бойкот)',
-      author: 'Кабінет №18'
+    {
+      id: 'station_5',
+      file: 'assets/images/evidence_station_5.jpg',
+      title: 'Доказ №5: Заклеєний підпис (Історія)',
+      caption: 'Головний банер виставки, де приховали ім\'я справжньої авторки ілюстрацій.',
+      stationId: 5,
+      unlockedByDefault: false,
+      tag: 'Кабінет №27 • Історія',
+      alt: 'Кабінет історії • Заклеєний підпис'
     },
-    station_5: {
-      key: 'station_5',
-      src: 'assets/images/clues/station_5_history.jpg',
-      alt: 'Кабінет історії',
-      caption: '📍 Локація 5: Кабінет історії (тиск авторитетом)',
-      author: 'Кабінет №27'
+    {
+      id: 'station_6',
+      file: 'assets/images/evidence_station_6.jpg',
+      title: 'Доказ №6: Зачинені двері (Біологія/Географія)',
+      caption: 'Демонстративний бойкот та ігнорування запитань перед днем відкриття виставки.',
+      stationId: 6,
+      unlockedByDefault: false,
+      tag: 'Кабінет №15 • Біологія',
+      alt: 'Кабінет біології • Зачинені двері'
     },
-    station_6: {
-      key: 'station_6',
-      src: 'assets/images/clues/station_6_bio.jpg',
-      alt: 'Кабінет біології',
-      caption: '📍 Локація 6: Кабінет біології (знецінення почуттів)',
-      author: 'Кабінет №15'
-    },
-    hq_psychologist: {
-      key: 'hq_psychologist',
-      src: 'assets/images/charter/hq_psychologist.jpg',
-      alt: 'Штаб Примирення (Кабінет психолога)',
-      caption: '🕊️ Штаб Примирення: Кабінет медіації та психологічної підтримки',
-      author: 'Кабінет №16'
-    },
-    reconciliation_complete: {
-      key: 'reconciliation_complete',
-      src: 'assets/images/charter/reconciliation_complete.jpg',
-      alt: 'Відновлена виставка та об’єднана команда',
-      caption: '🌟 Завершення справи: Спільна виставка та затверджена Хартія класу',
-      author: 'Оргкомітет виставки'
+    {
+      id: 'finale',
+      file: 'assets/images/evidence_finale.jpg',
+      title: 'Фінал: Врятована виставка "Почуй мене"',
+      caption: 'Усі роботи Надії повернулися на стенди після примирення та ухвалення Хартії поваги.',
+      stationId: 7,
+      unlockedByDefault: false,
+      tag: 'Штаб Примирення • Фінал',
+      alt: 'Врятована виставка "Почуй мене"'
     }
-  };
+  ];
+
+  // Сумісність зі старими ключами для плавного переходу
+  const STORY_IMAGES = {};
+  EVIDENCE_GALLERY.forEach(item => {
+    STORY_IMAGES[item.id] = {
+      key: item.id,
+      src: item.file,
+      alt: item.alt,
+      caption: item.caption,
+      author: item.tag
+    };
+  });
+  STORY_IMAGES.easel_empty = STORY_IMAGES.start;
+  STORY_IMAGES.notebook_notes = STORY_IMAGES.start;
+  STORY_IMAGES.hq_psychologist = STORY_IMAGES.finale;
+  STORY_IMAGES.reconciliation_complete = STORY_IMAGES.finale;
+
+  function getEvidenceItem(idOrKey) {
+    if (!idOrKey) return null;
+    const aliases = {
+      easel_empty: 'start',
+      notebook_notes: 'start',
+      hq_psychologist: 'finale',
+      reconciliation_complete: 'finale'
+    };
+    const targetId = aliases[idOrKey] || idOrKey;
+    return EVIDENCE_GALLERY.find(e => e.id === targetId) || null;
+  }
+
+  function generateImagePlaceholderSvg(title = 'Речовий доказ', subtitle = 'Справа про порожній мольберт') {
+    const safeTitle = (title || 'Речовий доказ').replace(/[<>&"]/g, '');
+    const safeSub = (subtitle || 'Матеріали справи').replace(/[<>&"]/g, '');
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+      <defs>
+        <linearGradient id="bgG" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0f172a"/>
+          <stop offset="50%" stop-color="#1e293b"/>
+          <stop offset="100%" stop-color="#090d16"/>
+        </linearGradient>
+      </defs>
+      <rect width="600" height="400" fill="url(#bgG)"/>
+      <rect x="16" y="16" width="568" height="368" rx="12" fill="none" stroke="#334155" stroke-width="2" stroke-dasharray="6,4"/>
+      <g transform="translate(300, 150)">
+        <circle cx="0" cy="0" r="46" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
+        <path d="M-18 -10 L-10 -18 L10 -18 L18 -10 L22 -10 A 4 4 0 0 1 26 -6 L26 18 A 4 4 0 0 1 22 22 L-22 22 A 4 4 0 0 1 -26 18 L-26 -6 A 4 4 0 0 1 -22 -10 Z" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="0" cy="5" r="9" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+        <circle cx="14" cy="-3" r="2.5" fill="#38bdf8"/>
+      </g>
+      <text x="300" y="240" fill="#f8fafc" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" text-anchor="middle">${safeTitle}</text>
+      <text x="300" y="272" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500" text-anchor="middle">${safeSub}</text>
+      <rect x="220" y="306" width="160" height="26" rx="13" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1"/>
+      <text x="300" y="323" fill="#93c5fd" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" text-anchor="middle">МАТЕРІАЛИ СПРАВИ</text>
+    </svg>`;
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
 
   // ==========================================================================
   // 1. ВЕКТОРНІ SVG-АВАТАРИ ПЕРСОНАЖІВ ТА ГРАФІКА (100% КОДОМ)
@@ -776,6 +841,7 @@
     finalCompleted: false,
     selectedCharterRules: [],
     listenedAudios: [],          // масив audioKey, які вже прослухано або прочитано
+    seenEvidenceIds: ['start'],  // масив id доказів у галереї, які вже переглянуто
     musicEnabled: true,          // Музика увімкнена за замовчуванням при старті
     hasStarted: false,           // Чи активовано стартову заставку "Розпочати розслідування"
     timestamp: Date.now()
@@ -792,6 +858,9 @@
         state.stepsCount = 6;
         if (!Array.isArray(state.listenedAudios)) {
           state.listenedAudios = [];
+        }
+        if (!Array.isArray(state.seenEvidenceIds)) {
+          state.seenEvidenceIds = ['start'];
         }
         if (state.hasStarted === undefined) {
           state.hasStarted = (state.stepIndex > 0 || state.completedLocations.length > 0 || state.finalCompleted);
@@ -1208,8 +1277,10 @@
         </div>
         <div class="audio-card-top-right">
           ${statusPillHtml}
-          <div class="audio-card-speaker-role">${item.speakerRole}</div>
         </div>
+      </div>
+      <div class="audio-card-meta-row">
+        <span class="audio-card-speaker-role">${item.speakerRole}</span>
       </div>
       <div class="audio-card-title">${item.title}</div>
       <div class="audio-player-main">
@@ -1454,7 +1525,11 @@
     btnBgm: document.getElementById('btn-bgm'),
     dossierView: document.getElementById('dossier-view'),
     chatView: document.getElementById('chat-view'),
+    galleryView: document.getElementById('gallery-view'),
     dossierUnreadDot: document.getElementById('dossier-unread-dot'),
+    galleryProgressText: document.getElementById('gallery-progress-text'),
+    galleryUnreadDot: document.getElementById('gallery-unread-dot'),
+    galleryGrid: document.getElementById('gallery-grid'),
 
     // Модальні вікна
     modalQr: document.getElementById('modal-qr'),
@@ -1462,6 +1537,7 @@
     modalCertificate: document.getElementById('modal-certificate'),
     modalLightbox: document.getElementById('modal-image-lightbox'),
     lightboxImg: document.getElementById('lightbox-img'),
+    lightboxTitle: document.getElementById('lightbox-title'),
     lightboxCaption: document.getElementById('lightbox-caption'),
     modalMinigame: document.getElementById('modal-minigame'),
     minigameModalBadge: document.getElementById('minigame-modal-badge'),
@@ -1516,6 +1592,10 @@
               splash.style.display = 'none';
             }, 350);
           }
+          if (this.chatStream) {
+            this.chatStream.scrollTop = 0;
+          }
+          this.scrollToAnchor('story-block-0', 0);
           AudioController.startBgmAuto();
           // Автоматично запускаємо narrator_intro, а по закінченні - voice_intro
           AudioController.playAudio('narrator_intro', null, () => {
@@ -1586,6 +1666,9 @@
           statStatus.className = 'status-pill active';
         }
       }
+
+      // Оновлення лічильника та бейджа Галереї доказів
+      this.updateGalleryCounter();
     },
 
     bindEvents() {
@@ -1601,6 +1684,7 @@
       const btnEvidenceBadge = document.getElementById('btn-evidence-badge');
 
       const openDossier = () => {
+        if (this.galleryView) this.galleryView.classList.remove('active');
         this.chatView.classList.remove('active');
         this.dossierView.classList.add('active');
         this.renderDossierBoard();
@@ -1608,6 +1692,7 @@
       };
 
       const closeDossier = () => {
+        if (this.galleryView) this.galleryView.classList.remove('active');
         this.dossierView.classList.remove('active');
         this.chatView.classList.add('active');
       };
@@ -1616,6 +1701,27 @@
       if (btnQuickDossier) btnQuickDossier.addEventListener('click', openDossier);
       if (btnEvidenceBadge) btnEvidenceBadge.addEventListener('click', openDossier);
       if (btnBackToChat) btnBackToChat.addEventListener('click', closeDossier);
+
+      // Галерея доказів
+      const btnGalleryToggle = document.getElementById('btn-gallery-toggle');
+      const btnBackFromGallery = document.getElementById('btn-back-from-gallery');
+      const btnDossierOpenGallery = document.getElementById('btn-dossier-open-gallery');
+
+      if (btnGalleryToggle) {
+        btnGalleryToggle.addEventListener('click', () => {
+          if (this.galleryView && this.galleryView.classList.contains('active')) {
+            this.closeGallery();
+          } else {
+            this.openGallery();
+          }
+        });
+      }
+      if (btnBackFromGallery) {
+        btnBackFromGallery.addEventListener('click', () => this.closeGallery());
+      }
+      if (btnDossierOpenGallery) {
+        btnDossierOpenGallery.addEventListener('click', () => this.openGallery());
+      }
 
       // Сканування QR-коду (камера активується лише при відкритті)
       const btnScanQrBar = document.getElementById('btn-scan-qr-bar');
@@ -1693,6 +1799,11 @@
 
       // Клавіатурне введення для десктопу
       window.addEventListener('keydown', (e) => {
+        if (this.galleryView && this.galleryView.classList.contains('active')) {
+          if (e.key === 'Escape') {
+            this.closeGallery();
+          }
+        }
         if (this.modalMinigame && this.modalMinigame.style.display === 'flex') {
           if (e.key === 'Escape') {
             this.closeMinigameModal();
@@ -1799,9 +1910,6 @@
       nadiiaIntroCard.style.marginTop = '6px';
       block0.appendChild(nadiiaIntroCard);
 
-      // Сюжетне зображення: Порожній мольберт Надії
-      this.appendStoryImage('easel_empty', block0);
-
       this.appendSystemNotice('08:14 — Надія Кравчук покинула бесіду "Оргкомітет виставки"', 'alert', block0);
 
       this.appendChatMessage(
@@ -1828,8 +1936,8 @@
         block0
       );
 
-      // Сюжетне зображення: Знайдений робочий блокнот
-      this.appendStoryImage('notebook_notes', block0);
+      // Сюжетне зображення: Порожній мольберт о 08:15 біля повідомлення Софії
+      this.appendStoryImage('start', block0, '📸 Фото з місця події (08:15)');
 
       // Голосове повідомлення Надії №1
       this.appendVoiceMessage(1, 'Голосове повідомлення Надії №1', block0);
@@ -1860,6 +1968,9 @@
         revealedWrapper.id = `step-revealed-${s + 1}`;
         revealedWrapper.className = 'step-revealed-block';
         revealedWrapper.style.display = 'contents';
+
+        // Фото долученого речового доказу у стрічці чату перед репліками
+        this.appendStoryImage(`station_${loc.id}`, revealedWrapper, `📸 Речовий доказ №${s + 1}: ${loc.name}`);
 
         if (s === 0) {
           // Після 1-ї пройденої локації
@@ -1982,7 +2093,7 @@
           this.chatStream.appendChild(divClue);
 
           this.appendClueCard(currentStep + 1, nextLoc);
-          defaultScrollAnchor = `clue-step-${currentStep + 1}`;
+          defaultScrollAnchor = currentStep === 0 ? 'story-block-0' : `clue-step-${currentStep + 1}`;
         }
       }
 
@@ -1993,10 +2104,14 @@
           const targetEl = document.getElementById(anchorToUse);
           if (targetEl) {
             this.scrollToElement(targetEl, 10);
+          } else if (currentStep === 0) {
+            if (this.chatStream) this.chatStream.scrollTop = 0;
           } else {
             this.scrollToBottom();
           }
         }, 80);
+      } else if (currentStep === 0) {
+        if (this.chatStream) this.chatStream.scrollTop = 0;
       } else {
         this.scrollToBottom();
       }
@@ -2036,64 +2151,226 @@
       return card;
     },
 
-    openImageLightbox(src, captionText = '') {
+    openImageLightbox(src, titleText = '', captionText = '') {
       if (!this.modalLightbox || !this.lightboxImg) return;
       this.lightboxImg.src = src;
-      this.lightboxImg.alt = captionText || 'Сюжетне зображення розслідування';
+      this.lightboxImg.alt = titleText || 'Сюжетне зображення розслідування';
+      this.lightboxImg.onerror = () => {
+        this.lightboxImg.onerror = null;
+        this.lightboxImg.src = generateImagePlaceholderSvg(titleText || 'Речовий доказ');
+      };
+
+      if (this.lightboxTitle) {
+        this.lightboxTitle.textContent = titleText;
+        this.lightboxTitle.style.display = titleText ? 'block' : 'none';
+      }
       if (this.lightboxCaption) {
         this.lightboxCaption.textContent = captionText;
         this.lightboxCaption.style.display = captionText ? 'block' : 'none';
       }
+
       this.modalLightbox.classList.add('active');
+      this.modalLightbox.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
     },
 
     closeImageLightbox() {
       if (!this.modalLightbox) return;
       this.modalLightbox.classList.remove('active');
+      this.modalLightbox.style.display = 'none';
+      document.body.style.overflow = '';
       if (this.lightboxImg) {
         this.lightboxImg.src = '';
       }
     },
 
-    appendStoryImage(imageKey, parent = null, customCaption = null) {
-      const imgData = STORY_IMAGES[imageKey];
-      if (!imgData) return null;
+    isEvidenceUnlocked(item) {
+      if (!item) return false;
+      if (item.unlockedByDefault) return true;
+      if (gameState.finalCompleted) return true;
+      if (item.id === 'finale') return !!gameState.finalCompleted;
+      if (item.stationId) {
+        return gameState.completedLocations.includes(item.stationId) ||
+               gameState.activeLocationId === item.stationId;
+      }
+      return false;
+    },
+
+    updateGalleryCounter() {
+      let unlockedCount = 0;
+      let hasUnseen = false;
+
+      EVIDENCE_GALLERY.forEach(item => {
+        if (this.isEvidenceUnlocked(item)) {
+          unlockedCount++;
+          if (!gameState.seenEvidenceIds.includes(item.id)) {
+            hasUnseen = true;
+          }
+        }
+      });
+
+      const total = EVIDENCE_GALLERY.length;
+      if (this.galleryProgressText) {
+        this.galleryProgressText.textContent = `${unlockedCount}/${total}`;
+      }
+      const headerCounter = document.getElementById('gallery-header-counter');
+      if (headerCounter) {
+        headerCounter.textContent = `${unlockedCount}/${total}`;
+      }
+      const dossierCounter = document.getElementById('dossier-gallery-counter');
+      if (dossierCounter) {
+        dossierCounter.textContent = `${unlockedCount}/${total}`;
+      }
+      if (this.galleryUnreadDot) {
+        this.galleryUnreadDot.style.display = hasUnseen ? 'block' : 'none';
+      }
+    },
+
+    openGallery() {
+      if (this.chatView) this.chatView.classList.remove('active');
+      if (this.dossierView) this.dossierView.classList.remove('active');
+      if (this.galleryView) this.galleryView.classList.add('active');
+
+      // Позначаємо всі відкриті зображення як переглянуті
+      EVIDENCE_GALLERY.forEach(item => {
+        if (this.isEvidenceUnlocked(item) && !gameState.seenEvidenceIds.includes(item.id)) {
+          gameState.seenEvidenceIds.push(item.id);
+        }
+      });
+      saveState();
+
+      if (this.galleryUnreadDot) {
+        this.galleryUnreadDot.style.display = 'none';
+      }
+
+      this.updateGalleryCounter();
+      this.renderEvidenceGallery();
+    },
+
+    closeGallery() {
+      if (this.galleryView) this.galleryView.classList.remove('active');
+      if (this.chatView) this.chatView.classList.add('active');
+      if (gameState.stepIndex === 0 && !gameState.activeLocationId) {
+        if (this.chatStream) this.chatStream.scrollTop = 0;
+      } else {
+        this.scrollToBottom();
+      }
+    },
+
+    renderEvidenceGallery() {
+      const grid = this.galleryGrid || document.getElementById('gallery-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      EVIDENCE_GALLERY.forEach(item => {
+        const isUnlocked = this.isEvidenceUnlocked(item);
+        const card = document.createElement('div');
+
+        if (isUnlocked) {
+          card.className = 'evidence-card unlocked';
+          card.dataset.evidenceId = item.id;
+          card.innerHTML = `
+            <div class="evidence-thumb-container" title="Торкніться для перегляду на весь екран">
+              <img class="evidence-thumb-img" src="${item.file}" alt="${item.alt || item.title}" loading="lazy" />
+              <span class="evidence-status-pill unlocked">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>РОЗКРИТО</span>
+              </span>
+              <div class="evidence-zoom-hint">
+                <span>🔍 Збільшити</span>
+              </div>
+            </div>
+            <div class="evidence-card-body">
+              <div class="evidence-card-tag">${item.tag || 'Матеріал справи'}</div>
+              <h4 class="evidence-card-title">${item.title}</h4>
+              <p class="evidence-card-caption">${item.caption}</p>
+            </div>
+          `;
+
+          const imgEl = card.querySelector('.evidence-thumb-img');
+          imgEl.onerror = () => {
+            imgEl.onerror = null;
+            imgEl.src = generateImagePlaceholderSvg(item.title, item.tag);
+            imgEl.classList.add('is-fallback-svg');
+          };
+
+          card.addEventListener('click', () => {
+            this.openImageLightbox(item.file, item.title, item.caption);
+          });
+        } else {
+          card.className = 'evidence-card locked';
+          card.dataset.evidenceId = item.id;
+          card.innerHTML = `
+            <div class="evidence-thumb-container blur-wrapper">
+              <img class="evidence-thumb-img locked-blur" src="${item.file}" alt="Заблокований доказ" loading="lazy" />
+              <div class="evidence-locked-overlay">
+                <div class="evidence-locked-badge">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <span>Доказ заблоковано</span>
+                </div>
+              </div>
+            </div>
+            <div class="evidence-card-body">
+              <div class="evidence-card-tag locked-tag">Секретний матеріал справи</div>
+              <h4 class="evidence-card-title locked-title">${item.title}</h4>
+              <p class="evidence-card-hint">
+                <em>Опитайте відповідного свідка на перерві, щоб розкрити цей матеріал справи</em>
+              </p>
+            </div>
+          `;
+
+          const imgEl = card.querySelector('.evidence-thumb-img');
+          imgEl.onerror = () => {
+            imgEl.onerror = null;
+            imgEl.src = generateImagePlaceholderSvg(item.title, 'Заблокований доказ');
+            imgEl.classList.add('is-fallback-svg');
+          };
+        }
+
+        grid.appendChild(card);
+      });
+    },
+
+    appendStoryImage(evidenceIdOrKey, parent = null, customBadge = null) {
+      const item = getEvidenceItem(evidenceIdOrKey);
+      if (!item) return null;
 
       const card = document.createElement('div');
-      card.className = 'chat-image-card pending-image';
-      card.style.display = 'none'; // Graceful fallback: приховано до фактичного завантаження
-      card.dataset.imgKey = imageKey;
+      card.className = 'chat-image-card';
+      card.dataset.evidenceId = item.id;
 
-      const caption = customCaption || imgData.caption;
+      const badgeText = customBadge || item.tag || '📸 РЕЧОВИЙ ДОКАЗ';
 
       card.innerHTML = `
         <div class="chat-image-wrapper" title="Торкніться для перегляду на весь екран">
-          <img class="chat-story-image" src="${imgData.src}" alt="${imgData.alt}" loading="lazy" />
+          <span class="chat-image-badge">${badgeText}</span>
+          <img class="chat-story-image" src="${item.file}" alt="${item.alt || item.title}" loading="lazy" />
           <div class="chat-image-zoom-overlay">
             <span>🔍 Збільшити</span>
           </div>
         </div>
         <div class="chat-image-info">
-          <div class="chat-image-caption">${caption}</div>
-          <div class="chat-image-author">${imgData.author}</div>
+          <div class="chat-image-title">${item.title}</div>
+          <div class="chat-image-caption">${item.caption}</div>
         </div>
       `;
 
       const imgEl = card.querySelector('.chat-story-image');
       const wrapperEl = card.querySelector('.chat-image-wrapper');
 
-      imgEl.addEventListener('load', () => {
-        card.classList.remove('pending-image');
-        card.style.display = 'block';
-      });
-
-      imgEl.addEventListener('error', () => {
-        card.classList.add('pending-image');
-        card.style.display = 'none';
-      });
+      imgEl.onerror = () => {
+        imgEl.onerror = null;
+        imgEl.src = generateImagePlaceholderSvg(item.title, item.tag);
+        imgEl.classList.add('is-fallback-svg');
+      };
 
       wrapperEl.addEventListener('click', () => {
-        this.openImageLightbox(imgData.src, caption);
+        this.openImageLightbox(item.file, item.title, item.caption);
       });
 
       (parent || this.chatStream).appendChild(card);
@@ -2158,6 +2435,9 @@
           <span class="testimony-time">${location.testimonyTime}</span>
         </div>
 
+        <!-- Сюжетна ілюстрація станції зі штампом -->
+        <div class="testimony-image-slot" id="img-slot-${location.id}"></div>
+
         <!-- 1. Аудіопротокол Хронікера розслідування -->
         <div class="testimony-narrator-slot" id="narrator-slot-${location.id}"></div>
 
@@ -2166,9 +2446,6 @@
           <span class="testimony-label">Побачене вчителем:</span>
           <div class="testimony-quote">«${location.testimonyText}»</div>
         </div>
-
-        <!-- 2.1 Сюжетна ілюстрація станції (якщо додано файл) -->
-        <div class="testimony-image-slot" id="img-slot-${location.id}"></div>
 
         <!-- 3. Голосовий щоденник Надії про цей випадок -->
         <div class="testimony-nadiia-slot" id="nadiia-slot-${location.id}"></div>
@@ -2196,7 +2473,7 @@
 
       const imgSlot = cardDiv.querySelector(`#img-slot-${location.id}`);
       if (imgSlot) {
-        this.appendStoryImage(`station_${location.id}`, imgSlot);
+        this.appendStoryImage(`station_${location.id}`, imgSlot, '📸 РЕЧОВИЙ ДОКАЗ ДОЛУЧЕНО');
       }
 
       // Прив'язка вибору висновку
@@ -3112,7 +3389,7 @@
       );
 
       // Сюжетне зображення: Завершення розслідування та спільна виставка
-      this.appendStoryImage('reconciliation_complete', reconcileWrap);
+      this.appendStoryImage('finale', reconcileWrap, '🏆 ВРЯТОВАНА ВИСТАВКА');
 
       // Кнопка перегляду Сертифіката
       const certCard = document.createElement('div');
@@ -3324,6 +3601,16 @@
           counterEl.textContent = `${unlockedCount} з ${archiveItems.length}`;
         }
       }
+
+      // 4. Оновлюємо лічильник доказів у картці галереї в досьє
+      const dossierGalleryCounter = document.getElementById('dossier-gallery-counter');
+      if (dossierGalleryCounter) {
+        let galleryUnlockedCount = 0;
+        EVIDENCE_GALLERY.forEach(item => {
+          if (this.isEvidenceUnlocked(item)) galleryUnlockedCount++;
+        });
+        dossierGalleryCounter.textContent = `${galleryUnlockedCount}/${EVIDENCE_GALLERY.length}`;
+      }
     },
 
     // ========================================================================
@@ -3429,6 +3716,7 @@
       this.setPinSuccess(`Код прийнято: ${targetLoc.name}!`);
       gameState.activeLocationId = targetLoc.id;
       saveState();
+      this.updateProgressIndicator();
 
       setTimeout(() => {
         this.closeCodeModal();
@@ -3594,8 +3882,24 @@
       alert(`Відскановано невідомий код: "${clean}". Перевірте, чи це QR-код станції квесту.`);
     },
 
+    scrollToAnchor(anchorId, offset = 10) {
+      if (!anchorId || !this.chatStream) return;
+      if (anchorId === 'story-block-0') {
+        this.chatStream.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      const targetEl = document.getElementById(anchorId);
+      if (targetEl) {
+        this.scrollToElement(targetEl, offset);
+      }
+    },
+
     scrollToElement(targetEl, offset = 10) {
       if (!targetEl || !this.chatStream) return;
+      if (targetEl.id === 'story-block-0') {
+        this.chatStream.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
       const streamRect = this.chatStream.getBoundingClientRect();
       const targetRect = targetEl.getBoundingClientRect();
       const currentScrollTop = this.chatStream.scrollTop;

@@ -92,6 +92,13 @@
           <span id="clues-progress-text">0/6</span>
         </button>
 
+        <!-- Gallery Toggle Button -->
+        <button id="btn-gallery-toggle" class="badge-gallery" title="Галерея доказів">
+          <span class="gallery-icon">🖼️</span>
+          <span id="gallery-progress-text">1/8</span>
+          <span class="unread-dot" id="gallery-unread-dot" style="display: none;"></span>
+        </button>
+
         <!-- Dossier Toggle -->
         <button id="btn-toggle-dossier" class="btn-icon" aria-label="Дошка розслідування" title="Дошка розслідування">
           <svg class="icon-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
@@ -197,6 +204,18 @@
           </div>
         </div>
 
+        <!-- Evidence Gallery Shortcut Card -->
+        <div class="dossier-gallery-card" id="btn-dossier-open-gallery" role="button" tabindex="0">
+          <div class="dossier-gallery-card-content">
+            <div class="dossier-gallery-icon">🖼️</div>
+            <div class="dossier-gallery-info">
+              <span class="dossier-gallery-title">Галерея речових доказів</span>
+              <span class="dossier-gallery-desc">Фотоархів розкритих та заблокованих матеріалів (<span id="dossier-gallery-counter">1/8</span>)</span>
+            </div>
+          </div>
+          <button class="btn-dossier-gallery-action" type="button">Відкрити галерею →</button>
+        </div>
+
         <!-- Investigation Grid: 6 Locations Dossier Cards -->
         <h4 class="section-heading">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
@@ -234,6 +253,36 @@
             <p>Урядова лінія з протидії насильству: <strong>1547</strong></p>
             <p>Кабінет шкільного психолога та медіатора відкритий для кожного учня.</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN VIEW 3: EVIDENCE GALLERY -->
+    <section id="gallery-view" class="view-panel" aria-label="Галерея доказів">
+      <div class="dossier-header gallery-header">
+        <button id="btn-back-from-gallery" class="btn-icon" aria-label="Назад до розслідування">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="dossier-title-box">
+          <h2 class="dossier-title">Галерея доказів</h2>
+          <span class="dossier-subtitle">Архів матеріалів справи (<span id="gallery-header-counter">1/8</span>)</span>
+        </div>
+      </div>
+
+      <div class="dossier-content gallery-scroll-body">
+        <div class="gallery-banner-card">
+          <div class="gallery-banner-icon">🔍</div>
+          <div class="gallery-banner-text">
+            <strong>Слідчий фотоархів експозиції:</strong>
+            Кожен відкритий доказ містить важливі матеріали про порушення кордонів або відновлення справедливості. Заблоковані докази розсекречуються під час опитування свідків на відповідних станціях.
+          </div>
+        </div>
+
+        <div class="gallery-grid" id="gallery-grid">
+          <!-- Populated by JS -->
         </div>
       </div>
     </section>
@@ -404,7 +453,10 @@
       <div class="lightbox-content">
         <button id="btn-close-lightbox" class="btn-lightbox-close" aria-label="Закрити зображення">✕</button>
         <img id="lightbox-img" class="lightbox-full-img" src="" alt="" />
-        <div id="lightbox-caption" class="lightbox-caption-text"></div>
+        <div class="lightbox-info-box">
+          <div id="lightbox-title" class="lightbox-title-text"></div>
+          <div id="lightbox-caption" class="lightbox-caption-text"></div>
+        </div>
       </div>
     </div>
 

@@ -224,6 +224,82 @@
   };
 
   // ==========================================================================
+  // 0.1 КАРТА СЮЖЕТНИХ ЗОБРАЖЕНЬ (STORY_IMAGES) - GRACEFUL FALLBACK
+  // ==========================================================================
+  const STORY_IMAGES = {
+    easel_empty: {
+      key: 'easel_empty',
+      src: 'assets/images/episodes/easel_empty.jpg',
+      alt: 'Порожній мольберт у шкільному фойє',
+      caption: '🎨 Доказ №0: Порожній мольберт Надії перед виставкою',
+      author: 'Шкільне фойє • 08:14'
+    },
+    notebook_notes: {
+      key: 'notebook_notes',
+      src: 'assets/images/episodes/notebook_notes.jpg',
+      alt: 'Робочий блокнот Надії зі скетчами',
+      caption: '📖 Знайдений на підвіконні блокнот із чернетками',
+      author: 'Знахідка Софії'
+    },
+    station_1: {
+      key: 'station_1',
+      src: 'assets/images/clues/station_1_inf.jpg',
+      alt: 'Кабінет інформатики',
+      caption: '📍 Локація 1: Комп’ютерний клас (мем та груповий чат)',
+      author: 'Кабінет №12'
+    },
+    station_2: {
+      key: 'station_2',
+      src: 'assets/images/clues/station_2_math.jpg',
+      alt: 'Кабінет математики',
+      caption: '📍 Локація 2: Кабінет математики (перекладання роботи)',
+      author: 'Кабінет №24'
+    },
+    station_3: {
+      key: 'station_3',
+      src: 'assets/images/clues/station_3_science.jpg',
+      alt: 'Лабораторія фізики та хімії',
+      caption: '📍 Локація 3: Лабораторія (сарказм та токсичний гумор)',
+      author: 'Кабінет №31'
+    },
+    station_4: {
+      key: 'station_4',
+      src: 'assets/images/clues/station_4_lit.jpg',
+      alt: 'Кабінет літератури',
+      caption: '📍 Локація 4: Кабінет літератури (ігнорування та бойкот)',
+      author: 'Кабінет №18'
+    },
+    station_5: {
+      key: 'station_5',
+      src: 'assets/images/clues/station_5_history.jpg',
+      alt: 'Кабінет історії',
+      caption: '📍 Локація 5: Кабінет історії (тиск авторитетом)',
+      author: 'Кабінет №27'
+    },
+    station_6: {
+      key: 'station_6',
+      src: 'assets/images/clues/station_6_bio.jpg',
+      alt: 'Кабінет біології',
+      caption: '📍 Локація 6: Кабінет біології (знецінення почуттів)',
+      author: 'Кабінет №15'
+    },
+    hq_psychologist: {
+      key: 'hq_psychologist',
+      src: 'assets/images/charter/hq_psychologist.jpg',
+      alt: 'Штаб Примирення (Кабінет психолога)',
+      caption: '🕊️ Штаб Примирення: Кабінет медіації та психологічної підтримки',
+      author: 'Кабінет №16'
+    },
+    reconciliation_complete: {
+      key: 'reconciliation_complete',
+      src: 'assets/images/charter/reconciliation_complete.jpg',
+      alt: 'Відновлена виставка та об’єднана команда',
+      caption: '🌟 Завершення справи: Спільна виставка та затверджена Хартія класу',
+      author: 'Оргкомітет виставки'
+    }
+  };
+
+  // ==========================================================================
   // 1. ВЕКТОРНІ SVG-АВАТАРИ ПЕРСОНАЖІВ ТА ГРАФІКА (100% КОДОМ)
   // ==========================================================================
   const SVG_AVATARS = {
@@ -699,6 +775,7 @@
     finalUnlocked: false,
     finalCompleted: false,
     selectedCharterRules: [],
+    listenedAudios: [],          // масив audioKey, які вже прослухано або прочитано
     musicEnabled: true,          // Музика увімкнена за замовчуванням при старті
     hasStarted: false,           // Чи активовано стартову заставку "Розпочати розслідування"
     timestamp: Date.now()
@@ -713,6 +790,9 @@
         const parsed = JSON.parse(saved);
         const state = Object.assign({}, defaultState, parsed);
         state.stepsCount = 6;
+        if (!Array.isArray(state.listenedAudios)) {
+          state.listenedAudios = [];
+        }
         if (state.hasStarted === undefined) {
           state.hasStarted = (state.stepIndex > 0 || state.completedLocations.length > 0 || state.finalCompleted);
         }
@@ -833,12 +913,40 @@
       UI.updateMusicButton();
     },
 
+    markAudioListened(audioKey) {
+      if (!audioKey) return;
+      if (!Array.isArray(gameState.listenedAudios)) {
+        gameState.listenedAudios = [];
+      }
+      if (!gameState.listenedAudios.includes(audioKey)) {
+        gameState.listenedAudios.push(audioKey);
+        saveState();
+      }
+      this.updateCardListenedVisual(audioKey);
+    },
+
+    updateCardListenedVisual(audioKey) {
+      const cards = document.querySelectorAll(`[data-audio-key="${audioKey}"]`);
+      cards.forEach(card => {
+        card.classList.remove('is-unread');
+        card.classList.add('is-listened');
+        const pill = card.querySelector('.audio-status-pill');
+        if (pill) {
+          pill.className = 'audio-status-pill pill-listened';
+          pill.innerHTML = `✓ Прослухано`;
+        }
+      });
+    },
+
     playAudio(audioKey, cardEl = null, onEndedCallback = null) {
       const audioItem = AUDIO_FILES[audioKey];
       if (!audioItem) {
         console.warn('Unknown audio key:', audioKey);
         return;
       }
+
+      // Фіксуємо факт прослуховування для оновлення статусних бейджів
+      this.markAudioListened(audioKey);
 
       // Якщо вже грає цей самий файл — ставимо на паузу (toggle)
       if (this.currentAudioKey === audioKey && this.voiceEl && !this.voiceEl.paused) {
@@ -1042,9 +1150,20 @@
     const item = AUDIO_FILES[audioKey];
     if (!item) return document.createElement('div');
 
+    const isListened = Array.isArray(gameState.listenedAudios) && gameState.listenedAudios.includes(audioKey);
+    const cardStatusClass = isListened ? 'is-listened' : 'is-unread';
+
     const card = document.createElement('div');
-    card.className = `audio-player-card audio-card-${item.speaker}`;
+    card.className = `audio-player-card audio-card-${item.speaker} ${cardStatusClass}`;
     card.setAttribute('data-audio-key', audioKey);
+
+    let statusPillHtml = '';
+    if (isListened) {
+      statusPillHtml = `<span class="audio-status-pill pill-listened">✓ Прослухано</span>`;
+    } else {
+      const specificPillClass = item.speaker === 'nadiia' ? 'pill-nadiia' : 'pill-narrator';
+      statusPillHtml = `<span class="audio-status-pill pill-unread ${specificPillClass}">● Не прослухано</span>`;
+    }
 
     let badgeHtml = '';
     let btnPlayClass = `btn-audio-play ${item.speaker}`;
@@ -1055,7 +1174,7 @@
             <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path>
             <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path>
           </svg>
-          <span>🎙️ Хронікер розслідування (Аудіопротокол)</span>
+          <span>🎙️ Хронікер розслідування</span>
         </div>
       `;
     } else if (item.speaker === 'nadiia') {
@@ -1084,8 +1203,13 @@
 
     card.innerHTML = `
       <div class="audio-card-top">
-        ${badgeHtml}
-        <div class="audio-card-speaker-role">${item.speakerRole}</div>
+        <div class="audio-card-top-left">
+          ${badgeHtml}
+        </div>
+        <div class="audio-card-top-right">
+          ${statusPillHtml}
+          <div class="audio-card-speaker-role">${item.speakerRole}</div>
+        </div>
       </div>
       <div class="audio-card-title">${item.title}</div>
       <div class="audio-player-main">
@@ -1133,6 +1257,9 @@
       e.stopPropagation();
       const isOpen = transcriptContent.classList.toggle('open');
       transcriptBtnText.textContent = isOpen ? 'Сховати текст' : 'Читати розшифровку';
+      if (isOpen) {
+        AudioController.markAudioListened(audioKey);
+      }
     });
 
     return card;
@@ -1333,6 +1460,17 @@
     modalQr: document.getElementById('modal-qr'),
     modalCode: document.getElementById('modal-code'),
     modalCertificate: document.getElementById('modal-certificate'),
+    modalLightbox: document.getElementById('modal-image-lightbox'),
+    lightboxImg: document.getElementById('lightbox-img'),
+    lightboxCaption: document.getElementById('lightbox-caption'),
+    modalMinigame: document.getElementById('modal-minigame'),
+    minigameModalBadge: document.getElementById('minigame-modal-badge'),
+    minigameModalTitle: document.getElementById('minigame-modal-title'),
+    minigameModalPrompt: document.getElementById('minigame-modal-prompt'),
+    minigameModalPlayground: document.getElementById('minigame-modal-playground'),
+    btnModalSubmitGame: document.getElementById('btn-modal-submit-game'),
+    btnModalSubmitText: document.getElementById('btn-modal-submit-text'),
+    btnCloseMinigame: document.getElementById('btn-close-minigame'),
     pinDigits: document.querySelectorAll('.pin-digit'),
     pinFeedback: document.getElementById('pin-feedback'),
 
@@ -1555,6 +1693,16 @@
 
       // Клавіатурне введення для десктопу
       window.addEventListener('keydown', (e) => {
+        if (this.modalMinigame && this.modalMinigame.style.display === 'flex') {
+          if (e.key === 'Escape') {
+            this.closeMinigameModal();
+          }
+        }
+        if (this.modalLightbox && this.modalLightbox.style.display === 'flex') {
+          if (e.key === 'Escape') {
+            this.closeImageLightbox();
+          }
+        }
         if (this.modalQr && this.modalQr.classList.contains('active')) {
           if (e.key === 'Escape') {
             QRScannerManager.stopScan();
@@ -1586,12 +1734,42 @@
           window.print();
         });
       }
+
+      // Лайтбокс сюжетних зображень
+      const btnCloseLightbox = document.getElementById('btn-close-lightbox');
+      if (btnCloseLightbox) {
+        btnCloseLightbox.addEventListener('click', () => {
+          this.closeImageLightbox();
+        });
+      }
+      if (this.modalLightbox) {
+        this.modalLightbox.addEventListener('click', (e) => {
+          if (e.target === this.modalLightbox) {
+            this.closeImageLightbox();
+          }
+        });
+      }
+
+      // Модальне вікно міні-ігор
+      const btnCloseMinigame = document.getElementById('btn-close-minigame');
+      if (btnCloseMinigame) {
+        btnCloseMinigame.addEventListener('click', () => {
+          this.closeMinigameModal();
+        });
+      }
+      if (this.modalMinigame) {
+        this.modalMinigame.addEventListener('click', (e) => {
+          if (e.target === this.modalMinigame) {
+            this.closeMinigameModal();
+          }
+        });
+      }
     },
 
     // ========================================================================
     // 9. СЮЖЕТНИЙ ЧАТ ТА ДІАЛОГИ (LAYER A)
     // ========================================================================
-    renderFullChatStory() {
+    renderFullChatStory(targetAnchorId = null) {
       if (!this.chatStream) return;
       this.chatStream.innerHTML = '';
 
@@ -1599,133 +1777,232 @@
       const currentStep = gameState.stepIndex;
 
       // ----------------------------------------------------------------------
-      // ЕТАП 0: СТАРТ РОЗСЛІДУВАННЯ (ОБОВ'ЯЗКОВО ДЛЯ ВСІХ)
+      // ЕТАП 0: СТАРТ РОЗСЛІДУВАННЯ (Зникнення Надії)
       // ----------------------------------------------------------------------
+      const isStep0Completed = currentStep > 0 || gameState.activeLocationId || gameState.inRecessMode || gameState.finalCompleted;
+
+      const div0 = document.createElement('div');
+      div0.className = `chat-episode-divider ${isStep0Completed ? 'completed' : 'active'}`;
+      div0.id = 'story-block-0';
+      div0.innerHTML = `<span class="chat-episode-pill">${isStep0Completed ? '✓' : '🔍'} Епізод 0: Зникнення Надії</span>`;
+      this.chatStream.appendChild(div0);
+
+      const block0 = document.createElement('div');
+      block0.className = `story-episode-block ${isStep0Completed ? 'completed' : 'active'}`;
+
       // 1. Вступний аудіобрифінг Хронікера (Євгеній Шевченко)
       const narratorIntroCard = createAudioPlayerElement('narrator_intro');
-      this.chatStream.appendChild(narratorIntroCard);
+      block0.appendChild(narratorIntroCard);
 
       // 2. Вступне особисте звернення Надії (у робочому блокноті)
       const nadiiaIntroCard = createAudioPlayerElement('voice_intro');
       nadiiaIntroCard.style.marginTop = '6px';
-      this.chatStream.appendChild(nadiiaIntroCard);
+      block0.appendChild(nadiiaIntroCard);
 
-      this.appendSystemNotice('08:14 — Надія Кравчук покинула бесіду "Оргкомітет виставки"', 'alert');
+      // Сюжетне зображення: Порожній мольберт Надії
+      this.appendStoryImage('easel_empty', block0);
+
+      this.appendSystemNotice('08:14 — Надія Кравчук покинула бесіду "Оргкомітет виставки"', 'alert', block0);
 
       this.appendChatMessage(
         CHARACTERS.maksym,
-        '«Народ, хтось розуміє, що це зараз було?! До відкриття виставки три години, а стенди порожні. Надя просто забрала всі плакати і вийшла з чату».'
+        '«Народ, хтось розуміє, що це зараз було?! До відкриття виставки три години, а стенди порожні. Надя просто забрала всі плакати і вийшла з чату».',
+        block0
       );
 
       this.appendChatMessage(
         CHARACTERS.denys,
-        '«Та класика. Намалювала собі драму на рівному місці. Ми вчора нормально сиділи, жартували, ніхто їй слова поганого не сказав!»'
+        '«Та класика. Намалювала собі драму на рівному місці. Ми вчора нормально сиділи, жартували, ніхто їй слова поганого не сказав!»',
+        block0
       );
 
       this.appendChatMessage(
         CHARACTERS.lera,
-        '«Ну... вона вчора виглядала трохи втомленою. Але ж ми всі втомлені, правда?»'
+        '«Ну... вона вчора виглядала трохи втомленою. Але ж ми всі втомлені, правда?»',
+        block0
       );
 
       this.appendChatMessage(
         CHARACTERS.sofiia,
-        '«"Ніхто слова поганого не сказав"?! Денисе, ти серйозно? Я щойно знайшла на підвіконні її робочий блокнот. Тут доступ до її особистих голосових чернеток і список кабінетів, де ви вчора "нормально спілкувалися"».'
+        '«"Ніхто слова поганого не сказав"?! Денисе, ти серйозно? Я щойно знайшла на підвіконні її робочий блокнот. Тут доступ до її особистих голосових чернеток і список кабінетів, де ви вчора "нормально спілкувалися"».',
+        block0
       );
 
+      // Сюжетне зображення: Знайдений робочий блокнот
+      this.appendStoryImage('notebook_notes', block0);
+
       // Голосове повідомлення Надії №1
-      this.appendVoiceMessage(1, 'Голосове повідомлення Надії №1');
+      this.appendVoiceMessage(1, 'Голосове повідомлення Надії №1', block0);
+
+      this.chatStream.appendChild(block0);
 
       // ----------------------------------------------------------------------
-      // ПОДАЛЬШИЙ СЮЖЕТ ЗАЛЕЖНО ВІД ПРОЙДЕНИХ ЛОКАЦІЙ
+      // ПРОЙДЕНІ СТАНЦІЇ ТА ДІАЛОГИ ПІСЛЯ НИХ
       // ----------------------------------------------------------------------
       for (let s = 0; s < currentStep; s++) {
         const locId = route[s];
         const loc = LOCATIONS[locId];
 
+        const divS = document.createElement('div');
+        divS.className = 'chat-episode-divider completed';
+        divS.id = `episode-divider-${s + 1}`;
+        divS.innerHTML = `<span class="chat-episode-pill">✓ Станція №${s + 1}: ${loc.name}</span>`;
+        this.chatStream.appendChild(divS);
+
+        const blockS = document.createElement('div');
+        blockS.className = 'story-episode-block completed';
+
         // Картка свідчення вчителя
-        this.appendTestimonyCard(loc, true);
+        this.appendTestimonyCard(loc, true, blockS);
 
         // Репліки персонажів та наступні голосові після кроків:
+        const revealedWrapper = document.createElement('div');
+        revealedWrapper.id = `step-revealed-${s + 1}`;
+        revealedWrapper.className = 'step-revealed-block';
+        revealedWrapper.style.display = 'contents';
+
         if (s === 0) {
           // Після 1-ї пройденої локації
           this.appendChatMessage(
             CHARACTERS.sofiia,
-            '«Ми щойно перевірили перше свідчення. І знаєте що? Це вже зовсім не схоже на "вона сама собі накрутила"».'
+            '«Ми щойно перевірили перше свідчення. І знаєте що? Це вже зовсім не схоже на "вона сама собі накрутила"».',
+            revealedWrapper
           );
           this.appendChatMessage(
             CHARACTERS.denys,
-            '«Ой, та ладно вам! Ну було таке, але ж ми по-дружньому! Хіба в компанії друзів не можна пожартувати чи попросити про послугу?»'
+            '«Ой, та ладно вам! Ну було таке, але ж ми по-дружньому! Хіба в компанії друзів не можна пожартувати чи попросити про послугу?»',
+            revealedWrapper
           );
-          this.appendVoiceMessage(2, 'Голосове повідомлення Надії №2');
+          this.appendVoiceMessage(2, 'Голосове повідомлення Надії №2', revealedWrapper);
         } else if (s === 1) {
           // Після 2-ї пройденої локації
           this.appendChatMessage(
             CHARACTERS.maksym,
-            '«Окей, я бачу, куди ви хилите. Так, місцями ми перегнули палицю. Але ж результат проєкту важливіший за чиїсь настрої! Я як лідер мав тримати дисципліну, хіба ні?»'
+            '«Окей, я бачу, куди ви хилите. Так, місцями ми перегнули палицю. Але ж результат проєкту важливіший за чиїсь настрої! Я як лідер мав тримати дисципліну, хіба ні?»',
+            revealedWrapper
           );
           this.appendChatMessage(
             CHARACTERS.lera,
-            '«Максиме... якщо чесно, мені ще вчора здавалося, що ми занадто сильно на неї тиснемо. Просто я не наважилася сказати це вголос при всіх».'
+            '«Максиме... якщо чесно, мені ще вчора здавалося, що ми занадто сильно на неї тиснемо. Просто я не наважилася сказати це вголос при всіх».',
+            revealedWrapper
           );
-          this.appendVoiceMessage(3, 'Голосове повідомлення Надії №3');
+          this.appendVoiceMessage(3, 'Голосове повідомлення Надії №3', revealedWrapper);
         } else if (s === 2) {
           // Після 3-ї локації
           this.appendChatMessage(
             CHARACTERS.denys,
-            '«Чесно кажучи, мені зараз реально ніяково. Я не думав, що один дурний жарт і кілька фраз у коридорі можуть так скластися одне до одного».'
+            '«Чесно кажучи, мені зараз реально ніяково. Я не думав, що один дурний жарт і кілька фраз у коридорі можуть так скластися одне до одного».',
+            revealedWrapper
           );
           this.appendChatMessage(
             CHARACTERS.maksym,
-            '«І я не правий. Замість того, щоб розподілити роботу чесно, я просто спихнув усе на Надю, бо знав, що вона відповідальна і не відмовить».'
+            '«І я не правий. Замість того, щоб розподілити роботу чесно, я просто спихнув усе на Надю, бо знав, що вона відповідальна і не відмовить».',
+            revealedWrapper
           );
         } else if (s === 3) {
           // Після 4-ї локації
           this.appendChatMessage(
             CHARACTERS.lera,
-            '«Тепер я розумію: коли ми просто спостерігали і не втручалися, ми ставали співучасниками цього тиску».'
+            '«Тепер я розумію: коли ми просто спостерігали і не втручалися, ми ставали співучасниками цього тиску».',
+            revealedWrapper
           );
           this.appendChatMessage(
             CHARACTERS.sofiia,
-            '«Саме так. Булінг тримається на мовчанні більшості. Але ми вже розкриваємо цей ланцюжок і разом знайдемо вихід».'
+            '«Саме так. Булінг тримається на мовчанні більшості. Але ми вже розкриваємо цей ланцюжок і разом знайдемо вихід».',
+            revealedWrapper
           );
         } else if (s === 4) {
           // Після 5-ї локації
           this.appendChatMessage(
             CHARACTERS.denys,
-            '«Залишився останній доказ перед тим, як ми зможемо скласти повну картину й повернути Надю».'
+            '«Залишився останній доказ перед тим, як ми зможемо скласти повну картину й повернути Надю».',
+            revealedWrapper
           );
           this.appendChatMessage(
             CHARACTERS.maksym,
-            '«Давайте завершимо це розслідування гідно. Кожен висновок має значення для всього класу».'
+            '«Давайте завершимо це розслідування гідно. Кожен висновок має значення для всього класу».',
+            revealedWrapper
           );
         }
+
+        blockS.appendChild(revealedWrapper);
+        this.chatStream.appendChild(blockS);
       }
+
+      // ----------------------------------------------------------------------
+      // ПОТОЧНИЙ АКТИВНИЙ БЛОК РОЗСЛІДУВАННЯ
+      // ----------------------------------------------------------------------
+      let defaultScrollAnchor = null;
 
       // Якщо зараз відкрита активна локація для вирішення
       if (gameState.activeLocationId && !gameState.inRecessMode) {
         const activeLoc = LOCATIONS[gameState.activeLocationId];
-        this.appendTestimonyCard(activeLoc, false);
+        const divActive = document.createElement('div');
+        divActive.className = 'chat-episode-divider active';
+        divActive.id = 'active-episode-divider';
+        divActive.innerHTML = `<span class="chat-episode-pill">⚡ Станція №${currentStep + 1}: ${activeLoc.name}</span>`;
+        this.chatStream.appendChild(divActive);
+
+        const blockActive = document.createElement('div');
+        blockActive.className = 'story-episode-block active';
+        this.appendTestimonyCard(activeLoc, false, blockActive);
+        this.chatStream.appendChild(blockActive);
+
+        defaultScrollAnchor = `testimony-loc-${activeLoc.id}`;
       }
       // Якщо в режимі перерви («Пауза на урок»)
       else if (gameState.inRecessMode) {
+        const divRecess = document.createElement('div');
+        divRecess.className = 'chat-episode-divider active';
+        divRecess.innerHTML = `<span class="chat-episode-pill">🔔 Пауза на урок: Час для навчання</span>`;
+        this.chatStream.appendChild(divRecess);
+
         this.appendRecessCard();
+        defaultScrollAnchor = 'recess-card';
       }
       // Якщо всі локації пройдено, переходимо до фіналу
       else if (currentStep >= route.length) {
+        const divFinal = document.createElement('div');
+        divFinal.className = 'chat-episode-divider active';
+        divFinal.id = 'final-episode-divider';
+        divFinal.innerHTML = `<span class="chat-episode-pill">🏁 Фінал: Штаб Примирення (Каб. 16)</span>`;
+        this.chatStream.appendChild(divFinal);
+
         this.appendFinalPhase();
+        defaultScrollAnchor = gameState.finalCompleted ? 'reconcile-start' : 'final-phase-start';
       }
       // Інакше — виводимо наводку-загадку на поточну нерозгадану станцію
       else {
         const nextLoc = route[currentStep] ? LOCATIONS[route[currentStep]] : null;
         if (nextLoc) {
+          const divClue = document.createElement('div');
+          divClue.className = 'chat-episode-divider active';
+          divClue.id = `clue-divider-${currentStep + 1}`;
+          divClue.innerHTML = `<span class="chat-episode-pill">🎯 Пошук станції №${currentStep + 1}</span>`;
+          this.chatStream.appendChild(divClue);
+
           this.appendClueCard(currentStep + 1, nextLoc);
+          defaultScrollAnchor = `clue-step-${currentStep + 1}`;
         }
       }
 
-      this.scrollToBottom();
+      // Виконуємо плавне позиціонування на якір першого повідомлення/блоку
+      const anchorToUse = targetAnchorId || defaultScrollAnchor;
+      if (anchorToUse) {
+        setTimeout(() => {
+          const targetEl = document.getElementById(anchorToUse);
+          if (targetEl) {
+            this.scrollToElement(targetEl, 10);
+          } else {
+            this.scrollToBottom();
+          }
+        }, 80);
+      } else {
+        this.scrollToBottom();
+      }
     },
 
-    appendChatMessage(character, text) {
+    appendChatMessage(character, text, parent = null) {
       const msgDiv = document.createElement('div');
       msgDiv.className = `chat-message ${character.classKey}`;
       msgDiv.innerHTML = `
@@ -1738,10 +2015,10 @@
           <div class="msg-bubble">${text}</div>
         </div>
       `;
-      this.chatStream.appendChild(msgDiv);
+      (parent || this.chatStream).appendChild(msgDiv);
     },
 
-    appendSystemNotice(text, type = 'normal') {
+    appendSystemNotice(text, type = 'normal', parent = null) {
       const noticeDiv = document.createElement('div');
       noticeDiv.className = `system-notice ${type}`;
       noticeDiv.innerHTML = `
@@ -1750,15 +2027,80 @@
         </svg>
         <span>${text}</span>
       `;
-      this.chatStream.appendChild(noticeDiv);
+      (parent || this.chatStream).appendChild(noticeDiv);
     },
 
-    appendVoiceMessage(voiceNum, label) {
+    appendVoiceMessage(voiceNum, label, parent = null) {
       const card = createAudioPlayerElement(`voice_nadiia_${voiceNum}`);
-      this.chatStream.appendChild(card);
+      (parent || this.chatStream).appendChild(card);
+      return card;
     },
 
-    appendClueCard(stepNumber, location) {
+    openImageLightbox(src, captionText = '') {
+      if (!this.modalLightbox || !this.lightboxImg) return;
+      this.lightboxImg.src = src;
+      this.lightboxImg.alt = captionText || 'Сюжетне зображення розслідування';
+      if (this.lightboxCaption) {
+        this.lightboxCaption.textContent = captionText;
+        this.lightboxCaption.style.display = captionText ? 'block' : 'none';
+      }
+      this.modalLightbox.classList.add('active');
+    },
+
+    closeImageLightbox() {
+      if (!this.modalLightbox) return;
+      this.modalLightbox.classList.remove('active');
+      if (this.lightboxImg) {
+        this.lightboxImg.src = '';
+      }
+    },
+
+    appendStoryImage(imageKey, parent = null, customCaption = null) {
+      const imgData = STORY_IMAGES[imageKey];
+      if (!imgData) return null;
+
+      const card = document.createElement('div');
+      card.className = 'chat-image-card pending-image';
+      card.style.display = 'none'; // Graceful fallback: приховано до фактичного завантаження
+      card.dataset.imgKey = imageKey;
+
+      const caption = customCaption || imgData.caption;
+
+      card.innerHTML = `
+        <div class="chat-image-wrapper" title="Торкніться для перегляду на весь екран">
+          <img class="chat-story-image" src="${imgData.src}" alt="${imgData.alt}" loading="lazy" />
+          <div class="chat-image-zoom-overlay">
+            <span>🔍 Збільшити</span>
+          </div>
+        </div>
+        <div class="chat-image-info">
+          <div class="chat-image-caption">${caption}</div>
+          <div class="chat-image-author">${imgData.author}</div>
+        </div>
+      `;
+
+      const imgEl = card.querySelector('.chat-story-image');
+      const wrapperEl = card.querySelector('.chat-image-wrapper');
+
+      imgEl.addEventListener('load', () => {
+        card.classList.remove('pending-image');
+        card.style.display = 'block';
+      });
+
+      imgEl.addEventListener('error', () => {
+        card.classList.add('pending-image');
+        card.style.display = 'none';
+      });
+
+      wrapperEl.addEventListener('click', () => {
+        this.openImageLightbox(imgData.src, caption);
+      });
+
+      (parent || this.chatStream).appendChild(card);
+      return card;
+    },
+
+    appendClueCard(stepNumber, location, parent = null) {
       const clueDiv = document.createElement('div');
       clueDiv.className = 'clue-envelope-card';
       clueDiv.id = `clue-step-${stepNumber}`;
@@ -1790,12 +2132,12 @@
         this.openCodeModal(location.id);
       });
 
-      this.chatStream.appendChild(clueDiv);
+      (parent || this.chatStream).appendChild(clueDiv);
     },
 
-    appendTestimonyCard(location, isAlreadyCompleted = false) {
+    appendTestimonyCard(location, isAlreadyCompleted = false, parent = null) {
       const cardDiv = document.createElement('div');
-      cardDiv.className = 'testimony-card';
+      cardDiv.className = `testimony-card ${isAlreadyCompleted ? 'completed-testimony' : 'active-testimony'}`;
       cardDiv.id = `testimony-loc-${location.id}`;
 
       let conclusionsHtml = '';
@@ -1825,6 +2167,9 @@
           <div class="testimony-quote">«${location.testimonyText}»</div>
         </div>
 
+        <!-- 2.1 Сюжетна ілюстрація станції (якщо додано файл) -->
+        <div class="testimony-image-slot" id="img-slot-${location.id}"></div>
+
         <!-- 3. Голосовий щоденник Надії про цей випадок -->
         <div class="testimony-nadiia-slot" id="nadiia-slot-${location.id}"></div>
 
@@ -1849,6 +2194,11 @@
       const nadiiaCard = createAudioPlayerElement(`voice_station_${location.id}`);
       nadiiaSlot.appendChild(nadiiaCard);
 
+      const imgSlot = cardDiv.querySelector(`#img-slot-${location.id}`);
+      if (imgSlot) {
+        this.appendStoryImage(`station_${location.id}`, imgSlot);
+      }
+
       // Прив'язка вибору висновку
       if (!isAlreadyCompleted) {
         const btns = cardDiv.querySelectorAll('.conclusion-btn');
@@ -1859,13 +2209,17 @@
           });
         });
 
-        // Автоматичне відтворення аудіопротоколу Хронікера при відкритті
+        // Автоматичне послідовне відтворення: Хронікер -> Надія (через 1с)
         setTimeout(() => {
-          AudioController.playAudio(`narrator_station_${location.id}`, narratorCard);
-        }, 120);
+          AudioController.playAudio(`narrator_station_${location.id}`, narratorCard, () => {
+            setTimeout(() => {
+              AudioController.playAudio(`voice_station_${location.id}`, nadiiaCard);
+            }, 1000);
+          });
+        }, 150);
       }
 
-      this.chatStream.appendChild(cardDiv);
+      (parent || this.chatStream).appendChild(cardDiv);
 
       // Якщо вже було розкрито в минулих кроках, одразу показуємо завершений бейдж
       if (isAlreadyCompleted) {
@@ -1880,6 +2234,10 @@
               </div>
             </div>
           `;
+        }
+        const minigamePlaceholder = cardDiv.querySelector(`#minigame-loc-${location.id}`);
+        if (minigamePlaceholder && location.minigame) {
+          this.renderMinigameTrigger(location, minigamePlaceholder, true);
         }
       }
     },
@@ -1930,61 +2288,168 @@
           `;
         }
 
-        // Відкриваємо мінігру цієї локації
+        // Відкриваємо слідчу експертизу цієї локації
         const minigamePlaceholder = cardElement.querySelector(`#minigame-loc-${location.id}`);
         if (minigamePlaceholder) {
-          this.renderMinigame(location, minigamePlaceholder);
+          if (location.minigame) {
+            this.renderMinigameTrigger(location, minigamePlaceholder, false);
+            this.scrollToElement(minigamePlaceholder, 10);
+          } else {
+            this.completeLocationAndTriggerRecess(location.id);
+          }
         }
       }
     },
 
     // ========================================================================
-    // 10. РЕНДЕРИНГ МІНІІГОР ДЛЯ 6 ЛОКАЦІЙ
+    // 10. РЕНДЕРИНГ МІНІІГОР ТА МОДАЛЬНОГО ВІКНА СЛІДЧОЇ ЕКСПЕРТИЗИ
     // ========================================================================
-    renderMinigame(location, container) {
+    renderMinigameTrigger(location, container, isCompleted = false) {
+      if (!location || !location.minigame || !container) return;
       const mg = location.minigame;
-      container.innerHTML = `
-        <div class="minigame-container">
-          <div class="minigame-title">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-              <path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-            </svg>
-            <span>${mg.title}</span>
+
+      if (isCompleted) {
+        container.innerHTML = `
+          <div class="minigame-trigger-card completed" id="mg-trigger-${location.id}">
+            <div class="mg-trigger-top">
+              <span class="mg-trigger-badge" style="color: #34d399;">✓ ЕКСПЕРТИЗА ПРОЙДЕНА</span>
+              <span class="mg-trigger-loc">${location.name}</span>
+            </div>
+            <div class="mg-trigger-title">${mg.title}</div>
+            <div class="mg-completed-pill">
+              <span>🔒 Матеріали зафіксовано в досьє слідства</span>
+            </div>
+            <button class="btn-review-minigame" id="btn-review-mg-${location.id}">
+              <span>🔍 Переглянути матеріали завдання</span>
+            </button>
           </div>
-          <div class="minigame-prompt">${mg.prompt}</div>
-          <div class="minigame-interactive-area" id="interactive-area-${location.id}"></div>
-          <button class="btn-submit-minigame" id="btn-submit-mg-${location.id}" disabled>
-            <span>Зафіксувати доказ у матеріалах справи</span>
-          </button>
-        </div>
-      `;
+        `;
 
-      const area = container.querySelector(`#interactive-area-${location.id}`);
-      const submitBtn = container.querySelector(`#btn-submit-mg-${location.id}`);
+        const btnReview = container.querySelector(`#btn-review-mg-${location.id}`);
+        if (btnReview) {
+          btnReview.addEventListener('click', () => {
+            this.openMinigameModal(location, true);
+          });
+        }
+      } else {
+        container.innerHTML = `
+          <div class="minigame-trigger-card active" id="mg-trigger-${location.id}">
+            <div class="mg-trigger-top">
+              <span class="mg-trigger-badge">⚡ СЛІДЧЕ ЗАВДАННЯ</span>
+              <span class="mg-trigger-loc">${location.name}</span>
+            </div>
+            <div class="mg-trigger-title">${mg.title}</div>
+            <div class="mg-trigger-desc">Для долучення доказу до справи виконайте інтерактивну слідчу експертизу у комфортному повноекранному режимі.</div>
+            <button class="btn-open-minigame pulse-anim" id="btn-open-mg-${location.id}">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+              </svg>
+              <span>🎮 Відкрити слідчу експертизу</span>
+            </button>
+          </div>
+        `;
 
-      // Розподіл за типом мінігри
-      if (mg.type === 'bucket_sort') {
-        this.setupBucketSortMinigame(mg, area, submitBtn, location);
-      } else if (mg.type === 'pair_match') {
-        this.setupPairMatchMinigame(mg, area, submitBtn, location);
-      } else if (mg.type === 'classify_four') {
-        this.setupClassifyFourMinigame(mg, area, submitBtn, location);
-      } else if (mg.type === 'ordering') {
-        this.setupOrderingMinigame(mg, area, submitBtn, location);
-      } else if (mg.type === 'imessage_builder') {
-        this.setupIMessageMinigame(mg, area, submitBtn, location);
+        const btnOpen = container.querySelector(`#btn-open-mg-${location.id}`);
+        if (btnOpen) {
+          btnOpen.addEventListener('click', () => {
+            this.openMinigameModal(location, false);
+          });
+        }
+      }
+    },
+
+    renderMinigame(location, container) {
+      this.renderMinigameTrigger(location, container, false);
+    },
+
+    openMinigameModal(location, isReadOnly = false) {
+      if (!this.modalMinigame || !location || !location.minigame) return;
+      const mg = location.minigame;
+
+      if (this.minigameModalBadge) {
+        this.minigameModalBadge.textContent = isReadOnly
+          ? `СТАНЦІЯ: ${location.name.toUpperCase()} • МАТЕРІАЛИ СПРАВИ`
+          : `СТАНЦІЯ: ${location.name.toUpperCase()} • СЛІДЧЕ ЗАВДАННЯ`;
+      }
+      if (this.minigameModalTitle) {
+        this.minigameModalTitle.textContent = mg.title;
+      }
+      if (this.minigameModalPrompt) {
+        this.minigameModalPrompt.textContent = isReadOnly
+          ? 'Матеріали успішно опрацьовано та долучено до справи. Нижче наведено правильне рішення завдання:'
+          : mg.prompt;
       }
 
-      submitBtn.addEventListener('click', () => {
-        this.completeLocationAndTriggerRecess(location.id);
-      });
+      const area = this.minigameModalPlayground;
+      if (!area) return;
+      area.innerHTML = '';
 
-      this.scrollToBottom();
+      // Клонуємо кнопку відправки для очищення старих слухачів подій
+      let submitBtn = this.btnModalSubmitGame;
+      if (submitBtn && submitBtn.parentNode) {
+        const clonedBtn = submitBtn.cloneNode(true);
+        submitBtn.parentNode.replaceChild(clonedBtn, submitBtn);
+        this.btnModalSubmitGame = clonedBtn;
+        this.btnModalSubmitText = clonedBtn.querySelector('#btn-modal-submit-text') || clonedBtn;
+        submitBtn = clonedBtn;
+      }
+
+      if (isReadOnly) {
+        submitBtn.disabled = false;
+        if (this.btnModalSubmitText) {
+          this.btnModalSubmitText.textContent = 'Згорнути перегляд матеріалів';
+        }
+        submitBtn.addEventListener('click', () => {
+          this.closeMinigameModal();
+        });
+      } else {
+        submitBtn.disabled = true;
+        if (this.btnModalSubmitText) {
+          this.btnModalSubmitText.textContent = 'Зафіксувати доказ у матеріалах справи';
+        }
+        submitBtn.addEventListener('click', () => {
+          this.closeMinigameModal();
+          this.completeLocationAndTriggerRecess(location.id);
+        });
+      }
+
+      // Розподіл логіки за типом мінігри
+      if (mg.type === 'bucket_sort') {
+        this.setupBucketSortMinigame(mg, area, submitBtn, location, isReadOnly);
+      } else if (mg.type === 'pair_match') {
+        this.setupPairMatchMinigame(mg, area, submitBtn, location, isReadOnly);
+      } else if (mg.type === 'classify_four') {
+        this.setupClassifyFourMinigame(mg, area, submitBtn, location, isReadOnly);
+      } else if (mg.type === 'ordering') {
+        this.setupOrderingMinigame(mg, area, submitBtn, location, isReadOnly);
+      } else if (mg.type === 'imessage_builder') {
+        this.setupIMessageMinigame(mg, area, submitBtn, location, isReadOnly);
+      }
+
+      this.modalMinigame.style.display = 'flex';
+      this.modalMinigame.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    },
+
+    closeMinigameModal() {
+      if (!this.modalMinigame) return;
+      this.modalMinigame.style.display = 'none';
+      this.modalMinigame.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (this.minigameModalPlayground) {
+        this.minigameModalPlayground.innerHTML = '';
+      }
     },
 
     // Мінігра 1: Bucket sort (Дружній гумор vs Порушення кордонів)
-    setupBucketSortMinigame(mg, area, submitBtn, location) {
+    setupBucketSortMinigame(mg, area, submitBtn, location, isReadOnly = false) {
       const placements = {}; // cardId -> 'humor' | 'boundary'
+
+      if (isReadOnly) {
+        mg.cards.forEach(c => {
+          placements[c.id] = c.target;
+        });
+      }
 
       area.innerHTML = `
         <div class="buckets-grid">
@@ -1997,8 +2462,8 @@
             <div class="bucket-items-list" id="bucket-list-boundary"></div>
           </div>
         </div>
-        <div class="unassigned-cards-pool" id="cards-pool">
-          <div style="font-size:11px; color:#94a3b8; margin-bottom:4px; text-align:center;">Торкніться картки, щоб перемістити:</div>
+        <div class="unassigned-cards-pool" id="cards-pool" ${isReadOnly ? 'style="display:none;"' : ''}>
+          <div style="font-size:12px; color:#94a3b8; margin-bottom:6px; text-align:center;">Торкніться картки, щоб перемістити між категоріями:</div>
           <div id="unassigned-items-list"></div>
         </div>
       `;
@@ -2019,33 +2484,43 @@
 
           const currentBucket = placements[card.id];
           if (!currentBucket) {
-            itemEl.addEventListener('click', () => {
-              placements[card.id] = 'humor';
-              checkSuccess();
-              renderCards();
-            });
+            if (!isReadOnly) {
+              itemEl.addEventListener('click', () => {
+                placements[card.id] = 'humor';
+                checkSuccess();
+                renderCards();
+              });
+            }
             unassignedList.appendChild(itemEl);
           } else if (currentBucket === 'humor') {
             itemEl.classList.add('placed-humor');
-            itemEl.addEventListener('click', () => {
-              placements[card.id] = 'boundary';
-              checkSuccess();
-              renderCards();
-            });
+            if (!isReadOnly) {
+              itemEl.addEventListener('click', () => {
+                placements[card.id] = 'boundary';
+                checkSuccess();
+                renderCards();
+              });
+            }
             humorList.appendChild(itemEl);
           } else if (currentBucket === 'boundary') {
             itemEl.classList.add('placed-boundary');
-            itemEl.addEventListener('click', () => {
-              delete placements[card.id];
-              checkSuccess();
-              renderCards();
-            });
+            if (!isReadOnly) {
+              itemEl.addEventListener('click', () => {
+                delete placements[card.id];
+                checkSuccess();
+                renderCards();
+              });
+            }
             boundaryList.appendChild(itemEl);
           }
         });
       };
 
       const checkSuccess = () => {
+        if (isReadOnly) {
+          submitBtn.disabled = false;
+          return;
+        }
         let allCorrect = true;
         let count = 0;
         mg.cards.forEach(c => {
@@ -2062,30 +2537,33 @@
       };
 
       renderCards();
+      if (isReadOnly) {
+        submitBtn.disabled = false;
+      }
     },
 
     // Мінігра 2 & 5: З'єднання пар
-    setupPairMatchMinigame(mg, area, submitBtn, location) {
+    setupPairMatchMinigame(mg, area, submitBtn, location, isReadOnly = false) {
       const pairs = mg.pairs;
       let selectedLeft = null;
       let matchedCount = 0;
 
-      // Перемішуємо праву колонку
-      const shuffledRights = [...pairs].sort(() => Math.random() - 0.5);
+      // Якщо тільки для перегляду — показуємо одразу з'єднані пари у прямому порядку
+      const rightList = isReadOnly ? pairs : [...pairs].sort(() => Math.random() - 0.5);
 
       area.innerHTML = `
         <div class="pair-match-container">
           <div class="match-columns-grid">
             <div class="match-col match-left-col">
               ${pairs.map(p => `
-                <div class="match-card left-card" data-left-id="${p.leftId}">
+                <div class="match-card left-card ${isReadOnly ? 'matched' : ''}" data-left-id="${p.leftId}">
                   <span>${p.left}</span>
                 </div>
               `).join('')}
             </div>
             <div class="match-col match-right-col">
-              ${shuffledRights.map(p => `
-                <div class="match-card right-card" data-right-id="${p.rightId}">
+              ${rightList.map(p => `
+                <div class="match-card right-card ${isReadOnly ? 'matched' : ''}" data-right-id="${p.rightId}">
                   <span>${p.right}</span>
                 </div>
               `).join('')}
@@ -2093,6 +2571,11 @@
           </div>
         </div>
       `;
+
+      if (isReadOnly) {
+        submitBtn.disabled = false;
+        return;
+      }
 
       const leftCards = area.querySelectorAll('.left-card');
       const rightCards = area.querySelectorAll('.right-card');
@@ -2136,22 +2619,37 @@
     },
 
     // Мінігра 3: Класифікатор 4 ситуацій
-    setupClassifyFourMinigame(mg, area, submitBtn, location) {
+    setupClassifyFourMinigame(mg, area, submitBtn, location, isReadOnly = false) {
       const selections = {};
+
+      if (isReadOnly) {
+        mg.items.forEach(it => {
+          selections[it.id] = it.correct;
+        });
+      }
 
       area.innerHTML = `
         <div class="classify-list">
-          ${mg.items.map(item => `
+          ${mg.items.map(item => {
+            const isFairSelected = isReadOnly && item.correct === 'fair';
+            const isManipSelected = isReadOnly && item.correct === 'manipulation';
+            return `
             <div class="classify-item" data-id="${item.id}">
               <div class="classify-text">«${item.text}»</div>
               <div class="classify-options">
-                <button class="classify-btn btn-opt-fair" data-id="${item.id}" data-val="fair">🤝 Чесна домовленість</button>
-                <button class="classify-btn btn-opt-manipulation" data-id="${item.id}" data-val="manipulation">🛑 Маніпуляція і примус</button>
+                <button class="classify-btn btn-opt-fair ${isFairSelected ? 'selected-fair' : ''}" data-id="${item.id}" data-val="fair" ${isReadOnly ? 'disabled' : ''}>🤝 Чесна домовленість</button>
+                <button class="classify-btn btn-opt-manipulation ${isManipSelected ? 'selected-manipulation' : ''}" data-id="${item.id}" data-val="manipulation" ${isReadOnly ? 'disabled' : ''}>🛑 Маніпуляція і примус</button>
               </div>
             </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>
       `;
+
+      if (isReadOnly) {
+        submitBtn.disabled = false;
+        return;
+      }
 
       const btns = area.querySelectorAll('.classify-btn');
       btns.forEach(b => {
@@ -2190,18 +2688,18 @@
     },
 
     // Мінігра 4: Впорядкування кроків небайдужого свідка
-    setupOrderingMinigame(mg, area, submitBtn, location) {
-      // Початково перемішаний порядок
-      let currentItems = [...mg.correctOrder].sort(() => Math.random() - 0.5);
+    setupOrderingMinigame(mg, area, submitBtn, location, isReadOnly = false) {
+      // Початковий порядок (для режиму перегляду — одразу правильний)
+      let currentItems = isReadOnly ? [...mg.correctOrder] : [...mg.correctOrder].sort(() => Math.random() - 0.5);
 
       const renderList = () => {
         area.innerHTML = `
           <div class="ordering-list">
             ${currentItems.map((text, idx) => `
-              <div class="order-step-item" data-idx="${idx}">
+              <div class="order-step-item ${isReadOnly ? 'correct' : ''}" data-idx="${idx}">
                 <div class="order-num-badge">${idx + 1}</div>
                 <div class="order-step-text">${text}</div>
-                <div class="order-actions">
+                <div class="order-actions" ${isReadOnly ? 'style="display:none;"' : ''}>
                   <button class="btn-order-move btn-up" data-idx="${idx}" ${idx === 0 ? 'disabled' : ''}>▲</button>
                   <button class="btn-order-move btn-down" data-idx="${idx}" ${idx === currentItems.length - 1 ? 'disabled' : ''}>▼</button>
                 </div>
@@ -2209,6 +2707,8 @@
             `).join('')}
           </div>
         `;
+
+        if (isReadOnly) return;
 
         area.querySelectorAll('.btn-up').forEach(b => {
           b.addEventListener('click', () => {
@@ -2255,11 +2755,21 @@
       };
 
       renderList();
+      if (isReadOnly) {
+        submitBtn.disabled = false;
+      }
     },
 
     // Мінігра 6: Конструктор «Я-повідомлення»
-    setupIMessageMinigame(mg, area, submitBtn, location) {
+    setupIMessageMinigame(mg, area, submitBtn, location, isReadOnly = false) {
       const picked = [null, null, null];
+
+      if (isReadOnly) {
+        mg.slots.forEach((s, idx) => {
+          const correctOptIdx = s.options.findIndex(o => o.correct);
+          picked[idx] = correctOptIdx;
+        });
+      }
 
       area.innerHTML = `
         <div class="imessage-builder">
@@ -2267,16 +2777,24 @@
             <div class="imessage-slot" data-slot="${sIdx}">
               <div class="slot-tag">${slot.label}</div>
               <div class="slot-choices">
-                ${slot.options.map((opt, oIdx) => `
-                  <button class="slot-choice-btn" data-slot="${sIdx}" data-opt="${oIdx}">
+                ${slot.options.map((opt, oIdx) => {
+                  const isSelected = isReadOnly && picked[sIdx] === oIdx;
+                  return `
+                  <button class="slot-choice-btn ${isSelected ? 'selected' : ''}" data-slot="${sIdx}" data-opt="${oIdx}" ${isReadOnly ? 'disabled' : ''}>
                     ${opt.text}
                   </button>
-                `).join('')}
+                  `;
+                }).join('')}
               </div>
             </div>
           `).join('')}
         </div>
       `;
+
+      if (isReadOnly) {
+        submitBtn.disabled = false;
+        return;
+      }
 
       const choiceBtns = area.querySelectorAll('.slot-choice-btn');
       choiceBtns.forEach(btn => {
@@ -2337,7 +2855,8 @@
 
       saveState();
       this.updateProgressIndicator();
-      this.renderFullChatStory();
+      const targetAnchor = gameState.inRecessMode ? 'recess-card' : 'final-phase-start';
+      this.renderFullChatStory(targetAnchor);
       this.renderDossierBoard();
 
       // Сповіщення про нові матеріали в досьє
@@ -2353,6 +2872,7 @@
 
       const card = document.createElement('div');
       card.className = 'recess-card';
+      card.id = 'recess-card';
       card.innerHTML = `
         <div class="recess-icon-anim">
           <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
@@ -2390,7 +2910,7 @@
         gameState.inRecessMode = false;
         saveState();
         this.updateProgressIndicator();
-        this.renderFullChatStory();
+        this.renderFullChatStory(`clue-step-${gameState.stepIndex + 1}`);
       });
 
       this.chatStream.appendChild(card);
@@ -2400,32 +2920,47 @@
     // 12. ФІНАЛЬНИЙ ЕТАП ТА ПРИМИРЕННЯ (КОД 1616)
     // ========================================================================
     appendFinalPhase() {
+      const finalContainer = document.createElement('div');
+      finalContainer.id = 'final-phase-start';
+      finalContainer.className = 'story-episode-block active';
+
       // Фінальні репліки перед штабом
       this.appendChatMessage(
         CHARACTERS.sofiia,
-        '«Усі свідчення зібрано! Подивіться на дошку розслідування: це був цілий ланцюжок порушення кордонів, знецінення почуттів, маніпуляцій та мовчання свідків. Відкрився останній голосовий запис Надії!»'
+        '«Усі свідчення зібрано! Подивіться на дошку розслідування: це був цілий ланцюжок порушення кордонів, знецінення почуттів, маніпуляцій та мовчання свідків. Відкрився останній голосовий запис Надії!»',
+        finalContainer
       );
 
-      // Голосове №4
-      this.appendVoiceMessage(4, 'Голосове повідомлення Надії №4 (Фінал)');
+      // Голосове №4 Надії (перед Хронікером)
+      const nadiiaVoice4Card = this.appendVoiceMessage(4, 'Голосове повідомлення Надії №4 (Фінал)', finalContainer);
 
       if (!gameState.finalCompleted) {
         // Запрошення до Штабу Примирення від Хронікера
         const narratorInviteCard = createAudioPlayerElement('narrator_hq_invite');
-        this.chatStream.appendChild(narratorInviteCard);
+        narratorInviteCard.style.marginTop = '10px';
+        finalContainer.appendChild(narratorInviteCard);
 
         // Резервний слот служби медіації
         const mediatorHqCard = createAudioPlayerElement('voice_mediator_hq');
         mediatorHqCard.style.marginTop = '8px';
-        this.chatStream.appendChild(mediatorHqCard);
+        finalContainer.appendChild(mediatorHqCard);
 
+        // Послідовне відтворення: спочатку Голосове Надії №4, а по його завершенню -> Хронікер Штабу
         setTimeout(() => {
-          AudioController.playAudio('narrator_hq_invite', narratorInviteCard);
-        }, 120);
+          AudioController.playAudio('voice_nadiia_4', nadiiaVoice4Card, () => {
+            setTimeout(() => {
+              AudioController.playAudio('narrator_hq_invite', narratorInviteCard);
+            }, 1000);
+          });
+        }, 150);
+
+        // Сюжетне зображення: Штаб Примирення
+        this.appendStoryImage('hq_psychologist', finalContainer);
 
         // Картка введення коду 1616
         const hqCard = document.createElement('div');
         hqCard.className = 'final-hq-card';
+        hqCard.id = 'final-hq-card';
         hqCard.style.marginTop = '14px';
         hqCard.innerHTML = `
           <div class="final-hq-badge">ФІНАЛЬНА ТОЧКА МАРШРУТУ</div>
@@ -2447,17 +2982,19 @@
           this.openCodeModal('1616');
         });
 
-        this.chatStream.appendChild(hqCard);
+        finalContainer.appendChild(hqCard);
       } else {
         // Фінал уже пройдено: повне примирення в чаті та кнопка сертифіката
-        this.renderCompletedReconciliation();
+        this.renderCompletedReconciliation(finalContainer);
       }
+
+      this.chatStream.appendChild(finalContainer);
     },
 
     showFinalCharterModal() {
       // Показуємо форму складання хартії
       const charterModalHtml = `
-        <div class="final-hq-card" style="margin-top:14px; animation:fadeInMsg 0.3s ease-out;">
+        <div class="final-hq-card" id="charter-section" style="margin-top:14px; animation:fadeInMsg 0.3s ease-out;">
           <div class="final-hq-badge">СХВАЛЕННЯ ХАРТІЇ БЕЗПЕКИ</div>
           <h3 class="final-hq-title">Хартія взаємоповаги та безпечного класу</h3>
           <p class="final-hq-desc">
@@ -2482,6 +3019,7 @@
       `;
 
       const wrapper = document.createElement('div');
+      wrapper.id = 'charter-wrapper';
       wrapper.innerHTML = charterModalHtml;
       this.chatStream.appendChild(wrapper);
 
@@ -2510,24 +3048,28 @@
         gameState.finalCompleted = true;
         saveState();
         AudioManager.playChime('success');
-        this.renderFullChatStory();
+        this.renderFullChatStory('reconcile-start');
       });
 
-      this.scrollToBottom();
+      this.scrollToElement(wrapper, 10);
     },
 
-    renderCompletedReconciliation() {
+    renderCompletedReconciliation(parent = null) {
+      const reconcileWrap = document.createElement('div');
+      reconcileWrap.id = 'reconcile-start';
+      reconcileWrap.className = 'reconcile-section-wrapper';
+
       // Системне повернення Надії
-      this.appendSystemNotice('09:30 — Надія Кравчук повернулася до бесіди "Оргкомітет виставки"', 'reconcile');
+      this.appendSystemNotice('09:30 — Надія Кравчук повернулася до бесіди "Оргкомітет виставки"', 'reconcile', reconcileWrap);
 
       // 1. Фінальний вердикт Хронікера (Євгеній Шевченко)
       const narratorFinaleCard = createAudioPlayerElement('narrator_finale');
-      this.chatStream.appendChild(narratorFinaleCard);
+      reconcileWrap.appendChild(narratorFinaleCard);
 
       // 2. Фінальна промова подяки Надії
       const nadiiaFinaleCard = createAudioPlayerElement('voice_nadiia_finale');
       nadiiaFinaleCard.style.marginTop = '8px';
-      this.chatStream.appendChild(nadiiaFinaleCard);
+      reconcileWrap.appendChild(nadiiaFinaleCard);
 
       // Автоматичне послідовне відтворення: Хронікер -> Надія (через 1с)
       setTimeout(() => {
@@ -2536,33 +3078,41 @@
             AudioController.playAudio('voice_nadiia_finale', nadiiaFinaleCard);
           }, 1000);
         });
-      }, 120);
+      }, 150);
 
       // Репліки персонажів
       this.appendChatMessage(
         CHARACTERS.nadiia,
-        '«Привіт усім! Я тут. Мені щойно передали плакати назад. Дякую кожному з вас, що знайшли час розібратися і почути мене... Тепер я знаю, що мої почуття важливі, а виставка стане початком справжньої поваги».'
+        '«Привіт усім! Я тут. Мені щойно передали плакати назад. Дякую кожному з вас, що знайшли час розібратися і почути мене... Тепер я знаю, що мої почуття важливі, а виставка стане початком справжньої поваги».',
+        reconcileWrap
       );
 
       this.appendChatMessage(
         CHARACTERS.maksym,
-        '«Надю, пробач мені за те, що знецінював твою роботу і спихав усю відповідальність. Я зрозумів, що лідер має підтримувати команду, а не командувати без огляду на людей».'
+        '«Надю, пробач мені за те, що знецінював твою роботу і спихав усю відповідальність. Я зрозумів, що лідер має підтримувати команду, а не командувати без огляду на людей».',
+        reconcileWrap
       );
 
       this.appendChatMessage(
         CHARACTERS.denys,
-        '«І мені дуже шкода за той дурний мем і фрази про "ти душниш". Я видалив його і більше ніколи не буду жартувати тим, що комусь боляче».'
+        '«І мені дуже шкода за той дурний мем і фрази про "ти душниш". Я видалив його і більше ніколи не буду жартувати тим, що комусь боляче».',
+        reconcileWrap
       );
 
       this.appendChatMessage(
         CHARACTERS.lera,
-        '«А я обіцяю більше ніколи не мовчати, коли бачу, що комусь потрібна підтримка».'
+        '«А я обіцяю більше ніколи не мовчати, коли бачу, що комусь потрібна підтримка».',
+        reconcileWrap
       );
 
       this.appendChatMessage(
         CHARACTERS.sofiia,
-        '«Тепер ми справжня команда! Виставка відбудеться сьогодні об 11:00, і на кожному плакаті буде підпис усіх учасників».'
+        '«Тепер ми справжня команда! Виставка відбудеться сьогодні об 11:00, і на кожному плакаті буде підпис усіх учасників».',
+        reconcileWrap
       );
+
+      // Сюжетне зображення: Завершення розслідування та спільна виставка
+      this.appendStoryImage('reconciliation_complete', reconcileWrap);
 
       // Кнопка перегляду Сертифіката
       const certCard = document.createElement('div');
@@ -2584,7 +3134,9 @@
         this.openCertificateModal();
       });
 
-      this.chatStream.appendChild(certCard);
+      reconcileWrap.appendChild(certCard);
+
+      (parent || this.chatStream).appendChild(reconcileWrap);
 
       // Оновлюємо статус у шапці
       if (this.headerStatus) {
@@ -2701,12 +3253,16 @@
           { key: 'voice_nadiia_finale', title: 'Фінальна промова подяки Надії', unlocked: gameState.finalCompleted }
         ];
 
-        archiveItems.forEach(item => {
-          const vItem = document.createElement('div');
+        let unlockedCount = 0;
+        archiveItems.forEach((item, index) => {
           const audioData = AUDIO_FILES[item.key];
+          const isUnlocked = Boolean(item.unlocked && audioData);
+          if (isUnlocked) unlockedCount++;
 
-          if (item.unlocked && audioData) {
-            vItem.className = 'voice-archive-item';
+          const vItem = document.createElement('div');
+
+          if (isUnlocked) {
+            vItem.className = 'voice-archive-item unlocked';
             vItem.innerHTML = `
               <div class="voice-archive-info" style="flex:1;">
                 <div class="voice-archive-title" style="font-weight:700;">${item.title}</div>
@@ -2743,10 +3299,14 @@
               });
             }
           } else {
+            // Повністю ховаємо за допомогою параметру hidden та display: none
             vItem.className = 'voice-archive-item locked';
+            vItem.hidden = true;
+            vItem.style.display = 'none';
+            vItem.setAttribute('aria-hidden', 'true');
             vItem.innerHTML = `
               <div class="voice-archive-info">
-                <div class="voice-archive-title" style="color:#94a3b8;">${item.title} [ЗАСЕКРЕЧЕНО]</div>
+                <div class="voice-archive-title" style="color:#94a3b8;">Засекречений аудіозапис №${index + 1}</div>
                 <div class="voice-archive-sub" style="color:#64748b; font-size:11px;">Запис зашифровано до розкриття відповідного етапу</div>
               </div>
               <div>
@@ -2757,6 +3317,12 @@
 
           voiceList.appendChild(vItem);
         });
+
+        // Оновлюємо лічильник відкритих чернеток
+        const counterEl = document.getElementById('voice-archive-counter');
+        if (counterEl) {
+          counterEl.textContent = `${unlockedCount} з ${archiveItems.length}`;
+        }
       }
     },
 
@@ -2866,7 +3432,7 @@
 
       setTimeout(() => {
         this.closeCodeModal();
-        this.renderFullChatStory();
+        this.renderFullChatStory(`testimony-loc-${targetLoc.id}`);
       }, 500);
     },
 
@@ -2898,11 +3464,12 @@
         team: gameState.team,
         stepsCount: 6,
         musicEnabled: true,
-        hasStarted: false
+        hasStarted: false,
+        listenedAudios: []
       });
       saveState();
       this.updateProgressIndicator();
-      this.renderFullChatStory();
+      this.renderFullChatStory('story-block-0');
       this.renderDossierBoard();
       this.initStartSplash();
       alert('Прогрес на цьому телефоні успішно скинуто! Розслідування розпочато заново.');
@@ -3027,6 +3594,19 @@
       alert(`Відскановано невідомий код: "${clean}". Перевірте, чи це QR-код станції квесту.`);
     },
 
+    scrollToElement(targetEl, offset = 10) {
+      if (!targetEl || !this.chatStream) return;
+      const streamRect = this.chatStream.getBoundingClientRect();
+      const targetRect = targetEl.getBoundingClientRect();
+      const currentScrollTop = this.chatStream.scrollTop;
+      const targetTop = currentScrollTop + (targetRect.top - streamRect.top) - offset;
+
+      this.chatStream.scrollTo({
+        top: Math.max(0, targetTop),
+        behavior: 'smooth'
+      });
+    },
+
     scrollToBottom() {
       const doScroll = () => {
         if (this.chatStream) {
@@ -3041,7 +3621,7 @@
     scrollToLatestClue() {
       const clues = this.chatStream.querySelectorAll('.clue-envelope-card, .testimony-card, .recess-card, .final-hq-card');
       if (clues.length > 0) {
-        clues[clues.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        this.scrollToElement(clues[clues.length - 1], 10);
       } else {
         this.scrollToBottom();
       }

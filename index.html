@@ -216,9 +216,10 @@
         </div>
 
         <!-- Audio Evidence Archives -->
-        <h4 class="section-heading">
+        <h4 class="section-heading" id="heading-voice-archives">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-          Аудіозаписи чернеток Надії
+          <span>Аудіозаписи чернеток Надії</span>
+          <span class="dossier-count-badge" id="voice-archive-counter"></span>
         </h4>
         <div class="voice-archives-list" id="voice-archives-list">
           <!-- Populated by JS -->
@@ -395,6 +396,56 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- MODAL 4: IMAGE LIGHTBOX PREVIEW -->
+    <div id="modal-image-lightbox" class="modal-backdrop image-lightbox-modal" aria-hidden="true">
+      <div class="lightbox-content">
+        <button id="btn-close-lightbox" class="btn-lightbox-close" aria-label="Закрити зображення">✕</button>
+        <img id="lightbox-img" class="lightbox-full-img" src="" alt="" />
+        <div id="lightbox-caption" class="lightbox-caption-text"></div>
+      </div>
+    </div>
+
+    <!-- MODAL 5: MINIGAME INTERACTIVE OVERLAY -->
+    <div id="modal-minigame" class="modal-backdrop minigame-backdrop" aria-hidden="true">
+      <div class="minigame-modal-container" role="dialog" aria-labelledby="minigame-modal-title">
+        
+        <!-- Sticky Header Bar -->
+        <div class="minigame-modal-header">
+          <div class="minigame-modal-title-group">
+            <span class="minigame-station-badge" id="minigame-modal-badge">СТАНЦІЯ №1 • ЕКСПЕРТИЗА</span>
+            <h3 class="minigame-modal-title" id="minigame-modal-title">Назва завдання</h3>
+          </div>
+          <button id="btn-close-minigame" class="btn-minigame-close" aria-label="Згорнути гру">
+            <span>✕ Згорнути</span>
+          </button>
+        </div>
+
+        <!-- Scrollable Playground Body -->
+        <div class="minigame-modal-body">
+          <div class="minigame-modal-prompt-box">
+            <div class="prompt-icon">💡</div>
+            <div class="prompt-text" id="minigame-modal-prompt">Інструкція до завдання</div>
+          </div>
+
+          <!-- Dynamic Playground Container -->
+          <div class="minigame-modal-playground" id="minigame-modal-playground">
+            <!-- Game interactive area mounted here -->
+          </div>
+        </div>
+
+        <!-- Sticky Footer Action Bar -->
+        <div class="minigame-modal-footer">
+          <button class="btn-modal-submit-game" id="btn-modal-submit-game" disabled>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span id="btn-modal-submit-text">Зафіксувати доказ у матеріалах справи</span>
+          </button>
+        </div>
+
       </div>
     </div>
 

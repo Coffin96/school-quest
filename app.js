@@ -745,8 +745,8 @@
     activeOnEndedCallback: null,
     audioCtx: null,
 
-    STANDARD_BGM_VOL: 0.35,
-    DUCKED_BGM_VOL: 0.12,
+    STANDARD_BGM_VOL: 0.18,
+    DUCKED_BGM_VOL: 0.05,
 
     init() {
       if (this.bgmEl) {
@@ -1332,7 +1332,6 @@
     // Модальні вікна
     modalQr: document.getElementById('modal-qr'),
     modalCode: document.getElementById('modal-code'),
-    modalSettings: document.getElementById('modal-settings'),
     modalCertificate: document.getElementById('modal-certificate'),
     pinDigits: document.querySelectorAll('.pin-digit'),
     pinFeedback: document.getElementById('pin-feedback'),
@@ -1521,21 +1520,11 @@
         });
       }
 
-      // Налаштування організатора
-      const btnOpenSettings = document.getElementById('btn-open-settings');
-      const btnCloseSettings = document.getElementById('btn-close-settings-modal');
-      if (btnOpenSettings) {
-        btnOpenSettings.addEventListener('click', () => this.openSettingsModal());
-      }
-      if (btnCloseSettings) {
-        btnCloseSettings.addEventListener('click', () => this.closeSettingsModal());
-      }
-
-      // Скидання прогресу (локально на цьому телефоні, без пароля)
+      // Скидання прогресу (значок очистки у верхній панелі)
       const btnReset = document.getElementById('btn-reset-progress');
       if (btnReset) {
         btnReset.addEventListener('click', () => {
-          if (confirm('Скинути слідство на цьому телефоні та розпочати заново?')) {
+          if (confirm('Скинути слідство на цьому пристрої та розпочати розслідування спочатку?')) {
             this.resetAllProgress();
           }
         });
@@ -2901,40 +2890,8 @@
     },
 
     // ========================================================================
-    // 15. НАЛАШТУВАННЯ КВЕСТУ (ПРИВ'ЯЗКА КОМАНДИ, ПЕРЕРВИ, СКИДАННЯ)
+    // 15. СКИДАННЯ ПРОГРЕСУ РОЗСЛІДУВАННЯ
     // ========================================================================
-    openSettingsModal() {
-      // Оновлюємо картку прив'язаної команди
-      const badge = document.getElementById('settings-team-bound-badge');
-      if (badge) {
-        badge.textContent = `Слідча Команда №${gameState.team}`;
-      }
-
-      const desc = document.getElementById('settings-team-bound-desc');
-      if (desc) {
-        const route = getActiveRouteList();
-        desc.textContent = `Маршрут цієї команди: [${route.map(id => LOCATIONS[id].name).join(' ➔ ')} ➔ Штаб]`;
-      }
-
-      this.modalSettings.classList.add('active');
-    },
-
-    closeSettingsModal() {
-      this.modalSettings.classList.remove('active');
-    },
-
-    updateSettingsUI() {
-      const badge = document.getElementById('settings-team-bound-badge');
-      if (badge) {
-        badge.textContent = `Слідча Команда №${gameState.team}`;
-      }
-      const desc = document.getElementById('settings-team-bound-desc');
-      if (desc) {
-        const route = getActiveRouteList();
-        desc.textContent = `Маршрут цієї команди: [${route.map(id => LOCATIONS[id].name).join(' ➔ ')} ➔ Штаб]`;
-      }
-    },
-
     resetAllProgress() {
       AudioController.stopVoice();
       gameState = Object.assign({}, defaultState, {
@@ -2944,7 +2901,6 @@
         hasStarted: false
       });
       saveState();
-      this.closeSettingsModal();
       this.updateProgressIndicator();
       this.renderFullChatStory();
       this.renderDossierBoard();
@@ -3072,11 +3028,14 @@
     },
 
     scrollToBottom() {
-      setTimeout(() => {
+      const doScroll = () => {
         if (this.chatStream) {
           this.chatStream.scrollTop = this.chatStream.scrollHeight;
         }
-      }, 80);
+      };
+      doScroll();
+      setTimeout(doScroll, 80);
+      setTimeout(doScroll, 220);
     },
 
     scrollToLatestClue() {

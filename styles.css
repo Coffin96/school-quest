@@ -231,6 +231,10 @@ html, body {
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
 }
+#btn-reset-progress:hover, #btn-reset-progress:active {
+  color: #f87171;
+  background-color: rgba(239, 68, 68, 0.15);
+}
 
 .badge-evidence {
   display: flex;
@@ -331,6 +335,7 @@ html, body {
   flex-direction: column;
   min-height: 0;
   position: relative;
+  overflow: hidden;
 }
 .view-panel.active {
   display: flex;
@@ -339,13 +344,27 @@ html, body {
 /* Потік повідомлень чату */
 .chat-stream {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 16px 12px calc(var(--footer-height) + 16px) 12px;
+  padding: 16px 12px 16px 12px;
   display: flex;
   flex-direction: column;
   gap: 14px;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Запобігання стисканню будь-яких блоків у flex-потоці повідомлень */
+.chat-stream > * {
+  flex-shrink: 0;
+}
+
+/* Фізичний буферний відступ знизу потоку перед закріпленою панеллю */
+.chat-stream::after {
+  content: "";
+  display: block;
+  min-height: 18px;
+  flex-shrink: 0;
 }
 
 /* Системні сповіщення чату */
@@ -620,6 +639,8 @@ html, body {
   position: relative;
   overflow: hidden;
   margin: 6px 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .clue-stamp {
@@ -1327,21 +1348,21 @@ html, body {
    ФІКСОВАНА НИЖНЯ ПАНЕЛЬ ДІЙ (ACTION BAR)
    ========================================================================== */
 .chat-action-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: var(--footer-height);
-  background: rgba(30, 41, 59, 0.96);
+  position: relative;
+  flex-shrink: 0;
+  min-height: var(--footer-height);
+  background: rgba(30, 41, 59, 0.98);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 8px 12px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   gap: 8px;
   z-index: 30;
+  box-sizing: border-box;
 }
 
 .action-btn {
@@ -1412,7 +1433,7 @@ html, body {
 }
 
 .dossier-content {
-  padding: 14px;
+  padding: 14px 14px 40px 14px;
   display: flex;
   flex-direction: column;
   gap: 16px;
